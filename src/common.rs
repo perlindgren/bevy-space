@@ -1,5 +1,4 @@
 use bevy::prelude::*;
-use leafwing_input_manager::*;
 
 // vintage television format
 pub const RES_Y: f32 = 1080.0; // well a bit too modern
@@ -67,11 +66,3 @@ pub enum Direction3 {
     #[default]
     None,
 }
-
-// // high level actions based on user input
-// #[derive(Actionlike, PartialEq, Eq, Hash, Clone, Copy, Debug, Reflect)]
-// pub enum PlayerAction {
-//     Left,
-//     Right,
-//     Shoot,
-// }

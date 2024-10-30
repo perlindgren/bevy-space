@@ -25,7 +25,8 @@ fn main() {
             ..default()
         }))
         .add_plugins(FrameTimeDiagnosticsPlugin)
-        .add_plugins(InputManagerPlugin::<player::PlayerAction>::default())
+        .add_plugins(InputManagerPlugin::<player::PlayerKeyboardAction>::default())
+        .add_plugins(InputManagerPlugin::<player::PlayerGamePadAction>::default())
         .add_plugins(InputManagerPlugin::<game_state::GameStateAction>::default())
         .insert_resource(ClearColor(Color::BLACK))
         .add_event::<audio::PlaySoundEvent>()
@@ -53,7 +54,8 @@ fn main() {
             (
                 (
                     hit_detection::update_system,
-                    player::update_system,
+                    player::keyboard_update_system,
+                    player::gamepad_update_system,
                     player::blink_update_system,
                     lazer::update_system,
                     alien::update_system,
@@ -65,13 +67,12 @@ fn main() {
                     game_state::update_system,
                     game_state::action_update_system,
                     particle::update_system,
-                    // gamepad::update_system,
                 )
                     .before(audio::audio_hit_system),
                 (
                     audio::audio_hit_system,
                     audio::play_music_system,
-                    lazer::fire_lazer_system,
+                    lazer::fire_lazer_system.run_if(game_state::is_playing),
                     game_state::game_state_event_system,
                 ),
             ),

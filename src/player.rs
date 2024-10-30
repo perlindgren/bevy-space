@@ -7,7 +7,7 @@ pub struct Player;
 
 // high level keyboard actions based on user input
 #[derive(Actionlike, PartialEq, Eq, Hash, Clone, Copy, Debug, Reflect)]
-pub enum PlayerAction {
+pub enum PlayerKeyboardAction {
     Left,
     Right,
     Shoot,
@@ -16,41 +16,58 @@ pub enum PlayerAction {
     Slow3,
 }
 
+#[derive(Actionlike, PartialEq, Eq, Clone, Copy, Hash, Debug, Reflect)]
+pub enum PlayerGamePadAction {
+    #[actionlike(DualAxis)]
+    Move,
+    Shoot,
+}
+
 /// player movement
-pub fn update_system(
+pub fn keyboard_update_system(
     time: Res<Time>,
-    action_query: Query<&ActionState<PlayerAction>, With<Player>>,
+    keyboard_action_query: Query<&ActionState<PlayerKeyboardAction>, With<Player>>,
     mut player_query: Query<&mut Transform, With<Player>>,
 ) {
     let mut transform = player_query.single_mut();
 
-    let action_state = action_query.single();
+    let action_state = keyboard_action_query.single();
     // Each action has a button-like state of its own that you can check
-    let mut direction = if action_state.pressed(&PlayerAction::Left)
+    let mut direction = if action_state.pressed(&PlayerKeyboardAction::Left)
         && transform.translation.x > -SCENE_WIDTH
     {
         -1.0
-    } else if action_state.pressed(&PlayerAction::Right) && transform.translation.x < SCENE_WIDTH {
+    } else if action_state.pressed(&PlayerKeyboardAction::Right)
+        && transform.translation.x < SCENE_WIDTH
+    {
         1.0
     } else {
         0.0
     };
 
-    if action_state.pressed(&PlayerAction::Slow1) {
+    if action_state.pressed(&PlayerKeyboardAction::Slow1) {
         direction *= PLAYER_SLOW;
     }
-    if action_state.pressed(&PlayerAction::Slow2) {
+    if action_state.pressed(&PlayerKeyboardAction::Slow2) {
         direction *= PLAYER_SLOW;
     }
-    if action_state.pressed(&PlayerAction::Slow3) {
+    if action_state.pressed(&PlayerKeyboardAction::Slow3) {
         direction *= PLAYER_SLOW;
     }
 
     transform.translation.x += direction * PLAYER_SPEED * time.delta_seconds();
+}
 
-    if action_state.just_pressed(&PlayerAction::Shoot) {
-        println!("Shoot");
-    }
+pub fn gamepad_update_system(
+    time: Res<Time>,
+    query: Query<&ActionState<PlayerGamePadAction>, With<Player>>,
+    mut player_query: Query<&mut Transform, With<Player>>,
+) {
+    let action_state = query.single();
+    let mut transform = player_query.single_mut();
+
+    let axis_pair = action_state.clamped_axis_pair(&PlayerGamePadAction::Move);
+    transform.translation.x += axis_pair.x * PLAYER_SPEED * time.delta_seconds();
 }
 
 // it uses the shared game_state to determine if visible
@@ -84,22 +101,28 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         },
     ));
 
-    // Describes how to convert from player inputs into those actions
+    // Describes how to convert keyboard inputs into actions
     let input_map = InputMap::new([
-        (PlayerAction::Left, KeyCode::ArrowLeft),
-        (PlayerAction::Left, KeyCode::KeyA),
-        (PlayerAction::Right, KeyCode::ArrowRight),
-        (PlayerAction::Right, KeyCode::KeyD),
-        (PlayerAction::Shoot, KeyCode::ArrowUp),
-        (PlayerAction::Shoot, KeyCode::Space),
-        (PlayerAction::Slow1, KeyCode::ShiftLeft),
-        (PlayerAction::Slow1, KeyCode::ShiftRight),
-        (PlayerAction::Slow2, KeyCode::AltRight),
-        (PlayerAction::Slow2, KeyCode::AltLeft),
-        (PlayerAction::Slow3, KeyCode::ControlLeft),
-        (PlayerAction::Slow3, KeyCode::ControlRight),
+        (PlayerKeyboardAction::Left, KeyCode::ArrowLeft),
+        (PlayerKeyboardAction::Left, KeyCode::KeyA),
+        (PlayerKeyboardAction::Right, KeyCode::ArrowRight),
+        (PlayerKeyboardAction::Right, KeyCode::KeyD),
+        (PlayerKeyboardAction::Shoot, KeyCode::ArrowUp),
+        (PlayerKeyboardAction::Shoot, KeyCode::Space),
+        (PlayerKeyboardAction::Slow1, KeyCode::ShiftLeft),
+        (PlayerKeyboardAction::Slow1, KeyCode::ShiftRight),
+        (PlayerKeyboardAction::Slow2, KeyCode::AltRight),
+        (PlayerKeyboardAction::Slow2, KeyCode::AltLeft),
+        (PlayerKeyboardAction::Slow3, KeyCode::ControlLeft),
+        (PlayerKeyboardAction::Slow3, KeyCode::ControlRight),
     ]);
-    commands
-        .spawn(InputManagerBundle::with_map(input_map))
-        .insert(Player);
+    commands.spawn((Player, InputManagerBundle::with_map(input_map)));
+    // Describes how to convert gamepad inputs into actions
+    let input_map = InputMap::default()
+        // Let's bind the left stick for the move action
+        .with_dual_axis(PlayerGamePadAction::Move, GamepadStick::LEFT)
+        // And then bind the right gamepad trigger to the throttle action
+        .with(PlayerGamePadAction::Shoot, GamepadButtonType::South)
+        .with(PlayerGamePadAction::Shoot, GamepadButtonType::East);
+    commands.spawn((Player, InputManagerBundle::with_map(input_map)));
 }

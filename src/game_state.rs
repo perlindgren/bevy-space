@@ -19,10 +19,19 @@ pub enum GameState {
     NewWave,
 }
 
+// helper
+pub fn is_playing(store: Res<Store>) -> bool {
+    match store.game_state {
+        GameState::Play | GameState::PlayerSpawn(_) => true,
+        _ => false,
+    }
+}
+
 // high level keyboard actions based on user input
 #[derive(Actionlike, PartialEq, Eq, Hash, Clone, Copy, Debug, Reflect)]
 pub enum GameStateAction {
     InsertCoin,
+    Info,
 }
 
 #[derive(Resource)]
@@ -70,8 +79,18 @@ pub fn setup(mut commands: Commands) {
         TimerMode::Repeating,
     )));
 
-    // Describes how to convert from player inputs into those actions
-    let input_map = InputMap::new([(GameStateAction::InsertCoin, KeyCode::Enter)]);
+    // Keyboard input
+    let input_map = InputMap::new([
+        (GameStateAction::InsertCoin, KeyCode::Enter),
+        (GameStateAction::Info, KeyCode::KeyI),
+    ]);
+    commands.spawn(InputManagerBundle::with_map(input_map));
+
+    // Gamepad
+    let input_map = InputMap::new([
+        (GameStateAction::InsertCoin, GamepadButtonType::Select),
+        (GameStateAction::Info, GamepadButtonType::Mode),
+    ]);
     commands.spawn(InputManagerBundle::with_map(input_map));
 }
 
@@ -160,9 +179,14 @@ pub fn action_update_system(
     mut game_state_ew: EventWriter<GameStateEvent>,
     action_query: Query<&ActionState<GameStateAction>>,
 ) {
-    let action_state = action_query.single();
-    if action_state.pressed(&GameStateAction::InsertCoin) {
-        game_state_ew.send(GameStateEvent::PressPlay);
+    for action_state in action_query.iter() {
+        if action_state.just_pressed(&GameStateAction::InsertCoin) {
+            game_state_ew.send(GameStateEvent::PressPlay);
+        }
+
+        if action_state.just_pressed(&GameStateAction::Info) {
+            game_state_ew.send(GameStateEvent::Info);
+        }
     }
 }
 
