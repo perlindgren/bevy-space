@@ -1,5 +1,10 @@
-use crate::{common::*, particle::*, player::Player};
+use crate::{
+    common::*,
+    particle::*,
+    player::{Player, PlayerAction},
+};
 use bevy::prelude::*;
+use leafwing_input_manager::prelude::*;
 use rand::random;
 use std::time::Duration;
 
@@ -14,17 +19,21 @@ pub enum Lazer {
 pub struct FireLazerEvent;
 
 pub fn fire_lazer_system(
-    mut fire_lazer_event: EventReader<FireLazerEvent>,
+    // mut fire_lazer_event: EventReader<FireLazerEvent>,
     mut lazer_query: Query<&mut Lazer>,
+    action_query: Query<&ActionState<PlayerAction>, With<Player>>,
 ) {
-    if !fire_lazer_event.is_empty() {
-        debug!("-- fire lazer event received --");
-        fire_lazer_event.clear();
+    let action_state = action_query.single();
+    if action_state.just_pressed(&PlayerAction::Shoot) {
         let mut lazer = lazer_query.single_mut();
         if *lazer == Lazer::Idle {
             *lazer = Lazer::Fire
         }
     }
+    // if !fire_lazer_event.is_empty() {
+    //     debug!("-- fire lazer event received --");
+    //     fire_lazer_event.clear();
+    // }
 }
 
 /// lazer movement

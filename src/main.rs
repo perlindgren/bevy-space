@@ -3,9 +3,9 @@
 
 use bevy::{diagnostic::FrameTimeDiagnosticsPlugin, prelude::*, window::WindowResolution};
 use bevy_space::{
-    alien, audio, bunker, common::*, game_state, gamepad, hit_detection, keyboard_input, lazer,
-    overlay, particle, player,
+    alien, audio, bunker, common::*, game_state, hit_detection, lazer, overlay, particle, player,
 };
+use leafwing_input_manager::prelude::*;
 
 fn setup(mut commands: Commands) {
     // we might want to setup a custom camera, for now just default
@@ -25,12 +25,14 @@ fn main() {
             ..default()
         }))
         .add_plugins(FrameTimeDiagnosticsPlugin)
+        .add_plugins(InputManagerPlugin::<player::PlayerAction>::default())
+        .add_plugins(InputManagerPlugin::<game_state::GameStateAction>::default())
         .insert_resource(ClearColor(Color::BLACK))
         .add_event::<audio::PlaySoundEvent>()
         .add_event::<audio::PlayMusicEvent>()
         .add_event::<lazer::FireLazerEvent>()
         .add_event::<game_state::GameStateEvent>()
-        .add_event::<player::PlayerEvent>()
+        // .add_event::<player::PlayerEvent>()
         .add_systems(
             Startup,
             (
@@ -50,7 +52,6 @@ fn main() {
             Update,
             (
                 (
-                    keyboard_input::update_system,
                     hit_detection::update_system,
                     player::update_system,
                     player::blink_update_system,
@@ -62,8 +63,9 @@ fn main() {
                     overlay::score_update_system,
                     overlay::state_update_system,
                     game_state::update_system,
+                    game_state::action_update_system,
                     particle::update_system,
-                    gamepad::update_system,
+                    // gamepad::update_system,
                 )
                     .before(audio::audio_hit_system),
                 (

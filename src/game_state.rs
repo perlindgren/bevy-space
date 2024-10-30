@@ -5,9 +5,10 @@ use crate::{
     common::*,
 };
 use bevy::prelude::*;
+use leafwing_input_manager::prelude::*;
 use std::{default::Default, time::Duration};
 
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Component)]
 pub enum GameState {
     GameOver,
     InsertCoin,
@@ -16,6 +17,12 @@ pub enum GameState {
     PlayerSpawn(u8),
     Play,
     NewWave,
+}
+
+// high level keyboard actions based on user input
+#[derive(Actionlike, PartialEq, Eq, Hash, Clone, Copy, Debug, Reflect)]
+pub enum GameStateAction {
+    InsertCoin,
 }
 
 #[derive(Resource)]
@@ -62,6 +69,10 @@ pub fn setup(mut commands: Commands) {
         STATE_TRANSITION_MENU,
         TimerMode::Repeating,
     )));
+
+    // Describes how to convert from player inputs into those actions
+    let input_map = InputMap::new([(GameStateAction::InsertCoin, KeyCode::Enter)]);
+    commands.spawn(InputManagerBundle::with_map(input_map));
 }
 
 pub fn cleanup_state<T>(commands: &mut Commands, query: Query<Entity, With<T>>)
@@ -103,11 +114,18 @@ pub fn game_state_event_system(
         match event {
             GameStateEvent::PressPlay => {
                 debug!("press play received");
-                play_music_event_writer.send(PlayMusicEvent(false));
-                store.reset();
-                store.lives = NR_LIVES;
-                store.game_state = GameState::Start;
-                timer.set(STATE_TRANSITION_START);
+                match store.game_state {
+                    GameState::InsertCoin | GameState::LeaderBoard => {
+                        play_music_event_writer.send(PlayMusicEvent(false));
+                        store.reset();
+                        store.lives = NR_LIVES;
+                        store.game_state = GameState::Start;
+                        timer.set(STATE_TRANSITION_START);
+                    }
+                    _ => {
+                        debug!("ignored, already in game mode");
+                    }
+                }
             }
             GameStateEvent::LooseLife => {
                 if store.game_state == GameState::Play {
@@ -134,6 +152,17 @@ pub fn game_state_event_system(
                 store.show_state ^= true;
             }
         }
+    }
+}
+
+// turns actions into events
+pub fn action_update_system(
+    mut game_state_ew: EventWriter<GameStateEvent>,
+    action_query: Query<&ActionState<GameStateAction>>,
+) {
+    let action_state = action_query.single();
+    if action_state.pressed(&GameStateAction::InsertCoin) {
+        game_state_ew.send(GameStateEvent::PressPlay);
     }
 }
 
