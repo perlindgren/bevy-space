@@ -9,7 +9,7 @@ log = { version = "*", features = [
     "max_level_debug",
     "release_max_level_error",
 ] }
-rand = "0.8.5"
+rand = "0.9.1"
 
 
 # Enable a small amount of optimization in the dev profile.
