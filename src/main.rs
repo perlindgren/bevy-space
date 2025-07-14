@@ -1,5 +1,5 @@
 //! Space Invaders revisited, why not?
-//! RUST_LOG="bevy-space=info" cargo run
+//! RUST_LOG="bevy_space=info" cargo run
 
 use bevy::{diagnostic::FrameTimeDiagnosticsPlugin, prelude::*, window::WindowResolution};
 // use bevy_space::{
@@ -22,6 +22,7 @@ fn setup(mut commands: Commands) {
 }
 
 fn main() {
+    info!("app started");
     App::new()
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
@@ -69,7 +70,7 @@ fn main() {
                     // alien::animate_update_system,
                     overlay::text_update_system,
                     // overlay::score_update_system,
-                    // overlay::state_update_system,
+                    overlay::state_update_system,
                     game_state::update_system,
                     // particle::update_system,
                     // gamepad::update_system,

@@ -273,7 +273,7 @@ pub fn state_update_system(
     game_state_timer: Res<TimerResource>,
 
     mut show_state_query: Query<&mut Visibility, With<ShowState>>,
-    mut game_state_query: Query<(&mut Visibility, &mut Text, &Overlay), Without<ShowState>>,
+    // mut game_state_query: Query<(&mut Visibility, &mut Text, &Overlay), Without<ShowState>>,
 ) {
     let mut show_state_visibilty = show_state_query.single_mut();
     *show_state_visibilty = if store.show_state {
@@ -282,18 +282,18 @@ pub fn state_update_system(
         Visibility::Hidden
     };
 
-    // compute alpha from sinus of ratio between elapse time and timer duration
+    // // compute alpha from sinus of ratio between elapse time and timer duration
 
-    let ratio =
-        game_state_timer.elapsed().as_secs_f32() / game_state_timer.duration().as_secs_f32();
-    let alpha = (PI * ratio).sin();
-    for (mut visibility, mut text, overlay) in &mut game_state_query {
-        // text.sections[0].style.color.set_alpha(alpha);
+    // let ratio =
+    //     game_state_timer.elapsed().as_secs_f32() / game_state_timer.duration().as_secs_f32();
+    // let alpha = (PI * ratio).sin();
+    // for (mut visibility, mut text, overlay) in &mut game_state_query {
+    //     // text.sections[0].style.color.set_alpha(alpha);
 
-        if overlay.game_state == store.game_state {
-            *visibility = Visibility::Visible;
-        } else {
-            *visibility = Visibility::Hidden;
-        }
-    }
+    //     if overlay.game_state == store.game_state {
+    //         *visibility = Visibility::Visible;
+    //     } else {
+    //         *visibility = Visibility::Hidden;
+    //     }
+    // }
 }

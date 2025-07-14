@@ -29,6 +29,7 @@ pub fn update_system(
     }
 
     if keyboard_input.just_pressed(KeyCode::KeyI) {
+        info!("Key I pressed (info)");
         game_state_ew.send(GameStateEvent::Info);
     }
 
