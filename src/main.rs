@@ -69,7 +69,7 @@ fn main() {
                     // alien::bullet_update_system,
                     // alien::animate_update_system,
                     overlay::text_update_system,
-                    // overlay::score_update_system,
+                    overlay::score_update_system,
                     overlay::state_update_system,
                     game_state::update_system,
                     // particle::update_system,

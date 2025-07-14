@@ -20,7 +20,10 @@ pub struct ShowState;
 pub struct FpsText;
 
 #[derive(Component)]
-pub struct Score;
+pub struct ScoreText;
+
+#[derive(Component)]
+pub struct LivesText;
 
 #[derive(Component)]
 pub struct StatusBar;
@@ -31,7 +34,7 @@ pub struct Overlay {
 }
 
 pub fn setup(mut commands: Commands) {
-    // Show State
+    // Show FPS
     commands
         .spawn((
             ShowState,
@@ -41,25 +44,6 @@ pub fn setup(mut commands: Commands) {
                 ..Default::default()
             },
             TextColor(WHITE.into()),
-            // TextBundle::from_sections([
-            //     TextSection::new(
-            //         "FPS: ",
-            //         TextStyle {
-            //             font_size: STATUS_BAR_FONT_SIZE,
-            //             ..default()
-            //         },
-            //     ),
-            //     TextSection::from_style(TextStyle {
-            //         font_size: STATUS_BAR_FONT_SIZE,
-            //         color: GOLD.into(),
-            //         ..default()
-            //     }),
-            // ])
-            // .with_style(Style {
-            //     position_type: PositionType::Absolute,
-
-            //     ..default()
-            // }),
             Node {
                 position_type: PositionType::Absolute,
                 top: Val::Px(60.0),
@@ -77,70 +61,98 @@ pub fn setup(mut commands: Commands) {
             FpsText,
         ));
 
-    // Score
-    commands.spawn((
-        Score,
-        // TextBundle::from_sections([
-        //     TextSection::new(
-        //         "SCORE: ",
-        //         TextStyle {
-        //             font_size: STATUS_BAR_FONT_SIZE,
-        //             ..default()
-        //         },
-        //     ),
-        //     // Score
-        //     TextSection::from_style(TextStyle {
-        //         font_size: STATUS_BAR_FONT_SIZE,
-        //         color: GOLD.into(),
-        //         ..default()
-        //     }),
-        // ])
-        // .with_style(Style {
-        //     position_type: PositionType::Absolute,
-        //     top: Val::Px(5.0),
-        //     right: Val::Px(15.0),
-        //     ..default()
-        // }),
-    ));
+    // Show Score
+    commands
+        .spawn((
+            Text::new("SCORE"),
+            TextFont {
+                font_size: STATUS_BAR_FONT_SIZE,
+                ..Default::default()
+            },
+            TextColor(WHITE.into()),
+            Node {
+                position_type: PositionType::Absolute,
+                top: Val::Px(5.0),
+                right: Val::Px(15.0),
+                ..default()
+            },
+        ))
+        .with_child((
+            TextSpan::default(),
+            TextFont {
+                font_size: STATUS_BAR_FONT_SIZE,
+                ..default()
+            },
+            TextColor(GOLD.into()),
+            ScoreText,
+        ));
 
     // Status Bar
-    commands.spawn((
-        StatusBar,
-        // TextBundle::from_sections([
-        //     TextSection::new(
-        //         "LIVES: ",
-        //         TextStyle {
-        //             font_size: STATUS_BAR_FONT_SIZE,
-        //             ..default()
-        //         },
-        //     ),
-        //     // Lives = 1
-        //     TextSection::from_style(TextStyle {
-        //         font_size: STATUS_BAR_FONT_SIZE,
-        //         color: GOLD.into(),
-        //         ..default()
-        //     }),
-        //     TextSection::new(
-        //         "WAVE: ",
-        //         TextStyle {
-        //             font_size: STATUS_BAR_FONT_SIZE,
-        //             ..default()
-        //         },
-        //     ),
-        //     // Wave = 3
-        //     TextSection::from_style(TextStyle {
-        //         font_size: STATUS_BAR_FONT_SIZE,
-        //         color: GOLD.into(),
-        //         ..default()
-        //     }),
-        // ])
-        // .with_style(Style {
-        //     position_type: PositionType::Absolute,
-        //     top: Val::Px(5.0),
-        //     left: Val::Px(15.0),
-        //     ..default()
-        // }),
-    ));
+    commands
+        .spawn(Node {
+            position_type: PositionType::Absolute,
+            top: Val::Px(5.0),
+            left: Val::Px(15.0),
+            ..default()
+        })
+        .with_child((
+            Text::new("LIVES"),
+            TextFont {
+                font_size: STATUS_BAR_FONT_SIZE,
+                ..Default::default()
+            },
+            TextColor(WHITE.into()),
+            Node {
+                position_type: PositionType::Absolute,
+                top: Val::Px(5.0),
+                left: Val::Px(15.0),
+                ..default()
+            },
+        ))
+        .with_child((
+            TextSpan::default(),
+            TextFont {
+                font_size: STATUS_BAR_FONT_SIZE,
+                ..default()
+            },
+            TextColor(GOLD.into()),
+            LivesText,
+        ));
+
+    // TextBundle::from_sections([
+    //     TextSection::new(
+    //         "LIVES: ",
+    //         TextStyle {
+    //             font_size: STATUS_BAR_FONT_SIZE,
+    //             ..default()
+    //         },
+    //     ),
+    //     // Lives = 1
+    //     TextSection::from_style(TextStyle {
+    //         font_size: STATUS_BAR_FONT_SIZE,
+    //         color: GOLD.into(),
+    //         ..default()
+    //     }),
+    //     TextSection::new(
+    //         "WAVE: ",
+    //         TextStyle {
+    //             font_size: STATUS_BAR_FONT_SIZE,
+    //             ..default()
+    //         },
+    //     ),
+    //     // Wave = 3
+    //     TextSection::from_style(TextStyle {
+    //         font_size: STATUS_BAR_FONT_SIZE,
+    //         color: GOLD.into(),
+    //         ..default()
+    //     }),
+    // ])
+    // .with_style(Style {
+    //     position_type: PositionType::Absolute,
+    //     top: Val::Px(5.0),
+    //     left: Val::Px(15.0),
+    //     ..default()
+    // }),
 
     // GameOver
     commands.spawn((
@@ -249,7 +261,6 @@ pub fn text_update_system(
     for mut span in &mut query {
         if let Some(fps) = diagnostics.get(&FrameTimeDiagnosticsPlugin::FPS) {
             if let Some(value) = fps.smoothed() {
-                // Update the value of the second section
                 **span = format!("{value:.2}");
             }
         }
@@ -258,15 +269,26 @@ pub fn text_update_system(
 
 pub fn score_update_system(
     store: Res<Store>,
-    mut status_query: Query<&mut Text, With<StatusBar>>,
-    mut score_query: Query<&mut Text, (With<Score>, Without<StatusBar>)>,
+    // mut status_query: Query<&mut Text, With<StatusBar>>,
+    // mut score_query: Query<&mut Text, (With<Score>, Without<StatusBar>)>,
+    mut lives_query: Query<&mut TextSpan, With<LivesText>>,
+    //mut score_query: Query<&mut TextSpan, (With<ScoreText>, Without<LivesText>)>,
 ) {
-    let mut status_text = status_query.single_mut();
-    let mut score_text = score_query.single_mut();
+    // let mut status_text = status_query.single_mut();
+    // let mut score_text = score_query.single_mut();
 
     // status_text.sections[1].value = format!("{:1}  ", store.lives);
     // status_text.sections[3].value = format!("{:1}  ", store.wave);
     // score_text.sections[1].value = format!("{:06}", store.score);
+
+    for mut span in &mut lives_query {
+        info!("-");
+        **span = "0".to_string(); //format!("{:1}  ", store.lives);
+    }
+
+    // for mut span in &mut score_query {
+    //     **span = format!("{:06}", store.score);
+    // }
 }
 pub fn state_update_system(
     store: ResMut<Store>,
