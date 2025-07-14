@@ -18,7 +18,7 @@ use bevy_space::{
 
 fn setup(mut commands: Commands) {
     // we might want to setup a custom camera, for now just default
-    commands.spawn(Camera2dBundle::default());
+    commands.spawn(Camera2d);
 }
 
 fn main() {
@@ -34,7 +34,7 @@ fn main() {
             }),
             ..default()
         }))
-        .add_plugins(FrameTimeDiagnosticsPlugin)
+        .add_plugins(FrameTimeDiagnosticsPlugin::default())
         .insert_resource(ClearColor(Color::BLACK))
         // .add_event::<audio::PlaySoundEvent>()
         // .add_event::<audio::PlayMusicEvent>()
