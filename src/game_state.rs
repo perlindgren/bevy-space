@@ -1,7 +1,7 @@
 use crate::{
-    alien,
-    audio::PlayMusicEvent,
-    bunker::{self, Bunker},
+    // alien,
+    // audio::PlayMusicEvent,
+    // bunker::{self, Bunker},
     common::*,
 };
 use bevy::prelude::*;
@@ -94,7 +94,7 @@ pub enum GameStateEvent {
 
 pub fn game_state_event_system(
     mut game_state_er: EventReader<GameStateEvent>,
-    mut play_music_event_writer: EventWriter<PlayMusicEvent>,
+    // mut play_music_event_writer: EventWriter<PlayMusicEvent>,
     mut store: ResMut<Store>,
     mut timer: ResMut<TimerResource>,
 ) {
@@ -103,7 +103,7 @@ pub fn game_state_event_system(
         match event {
             GameStateEvent::PressPlay => {
                 debug!("press play received");
-                play_music_event_writer.send(PlayMusicEvent(false));
+                // play_music_event_writer.send(PlayMusicEvent(false));
                 store.reset();
                 store.lives = NR_LIVES;
                 store.game_state = GameState::Start;
@@ -146,9 +146,9 @@ pub fn update_system(
 
     asset_server: Res<AssetServer>,
     mut texture_atlas_layout: ResMut<Assets<TextureAtlasLayout>>,
-    alien_query: Query<Entity, With<alien::Alien>>,
-    alien_bullet_query: Query<Entity, With<alien::AlienBullet>>,
-    bunker_query: Query<Entity, With<Bunker>>,
+    // alien_query: Query<Entity, With<alien::Alien>>,
+    // alien_bullet_query: Query<Entity, With<alien::AlienBullet>>,
+    // bunker_query: Query<Entity, With<Bunker>>,
 ) {
     timer.tick(time.delta());
 
@@ -165,19 +165,19 @@ pub fn update_system(
             GameState::InsertCoin => GameState::LeaderBoard,
             GameState::LeaderBoard => GameState::InsertCoin,
             GameState::Start | GameState::NewWave => {
-                alien::reset(
-                    &mut commands,
-                    &asset_server,
-                    &mut texture_atlas_layout,
-                    alien_query,
-                    alien_bullet_query,
-                );
-                bunker::reset(
-                    &mut commands,
-                    &asset_server,
-                    &mut texture_atlas_layout,
-                    bunker_query,
-                );
+                // alien::reset(
+                //     &mut commands,
+                //     &asset_server,
+                //     &mut texture_atlas_layout,
+                //     alien_query,
+                //     alien_bullet_query,
+                // );
+                // bunker::reset(
+                //     &mut commands,
+                //     &asset_server,
+                //     &mut texture_atlas_layout,
+                //     bunker_query,
+                // );
 
                 if store.game_state == GameState::Start {
                     debug!("--- Start ---");

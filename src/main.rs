@@ -2,9 +2,18 @@
 //! RUST_LOG="bevy-space=info" cargo run
 
 use bevy::{diagnostic::FrameTimeDiagnosticsPlugin, prelude::*, window::WindowResolution};
+// use bevy_space::{
+//     alien, audio, bunker, common::*, game_state, gamepad, hit_detection, keyboard_input, lazer,
+//     overlay, particle, player,
+// };
+
 use bevy_space::{
-    alien, audio, bunker, common::*, game_state, gamepad, hit_detection, keyboard_input, lazer,
-    overlay, particle, player,
+    common::*,
+    game_state,
+    keyboard_input,
+    overlay,
+    // alien, audio, bunker, common::*, game_state, gamepad, hit_detection, keyboard_input, lazer,
+    // overlay, particle, player,
 };
 
 fn setup(mut commands: Commands) {
@@ -26,23 +35,23 @@ fn main() {
         }))
         .add_plugins(FrameTimeDiagnosticsPlugin)
         .insert_resource(ClearColor(Color::BLACK))
-        .add_event::<audio::PlaySoundEvent>()
-        .add_event::<audio::PlayMusicEvent>()
-        .add_event::<lazer::FireLazerEvent>()
+        // .add_event::<audio::PlaySoundEvent>()
+        // .add_event::<audio::PlayMusicEvent>()
+        // .add_event::<lazer::FireLazerEvent>()
         .add_event::<game_state::GameStateEvent>()
-        .add_event::<player::PlayerEvent>()
+        //.add_event::<player::PlayerEvent>()
         .add_systems(
             Startup,
             (
                 setup,
                 game_state::setup,
-                player::setup,
-                lazer::setup,
-                alien::setup,
-                bunker::setup,
+                // player::setup,
+                // lazer::setup,
+                // alien::setup,
+                // bunker::setup,
                 overlay::setup,
-                particle::setup,
-                audio::setup,
+                // particle::setup,
+                // audio::setup,
             )
                 .chain(),
         )
@@ -51,25 +60,24 @@ fn main() {
             (
                 (
                     keyboard_input::update_system,
-                    hit_detection::update_system,
-                    player::update_system,
-                    player::blink_update_system,
-                    lazer::update_system,
-                    alien::update_system,
-                    alien::bullet_update_system,
-                    alien::animate_update_system,
+                    // hit_detection::update_system,
+                    // player::update_system,
+                    // player::blink_update_system,
+                    // lazer::update_system,
+                    // alien::update_system,
+                    // alien::bullet_update_system,
+                    // alien::animate_update_system,
                     overlay::text_update_system,
-                    overlay::score_update_system,
-                    overlay::state_update_system,
+                    // overlay::score_update_system,
+                    // overlay::state_update_system,
                     game_state::update_system,
-                    particle::update_system,
-                    gamepad::update_system,
-                )
-                    .before(audio::audio_hit_system),
+                    // particle::update_system,
+                    // gamepad::update_system,
+                ), //.before(audio::audio_hit_system),
                 (
-                    audio::audio_hit_system,
-                    audio::play_music_system,
-                    lazer::fire_lazer_system,
+                    // audio::audio_hit_system,
+                    // audio::play_music_system,
+                    // lazer::fire_lazer_system,
                     game_state::game_state_event_system,
                 ),
             ),
