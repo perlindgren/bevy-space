@@ -27,10 +27,7 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 
     commands.spawn((
         Music,
-        AudioBundle {
-            source: asset_server.load("sounds/Windless Slopes.ogg"),
-            ..default()
-        },
+        AudioPlayer::<AudioSource>(asset_server.load("sounds/Windless Slopes.ogg")),
     ));
 }
 
@@ -43,10 +40,11 @@ pub fn audio_hit_system(
         let sample = match event {
             PlaySoundEvent::AlienHit => &sound.hit_sample,
         };
-        commands.spawn(AudioBundle {
-            source: sample.clone(), // this is ugly, why owned?
-            settings: PlaybackSettings::DESPAWN,
-        });
+        // commands.spawn(AudioBundle {
+        //     source: sample.clone(), // this is ugly, why owned?
+        //     settings: PlaybackSettings::DESPAWN,
+        // });
+        commands.spawn(AudioPlayer::<AudioSource>(sample.clone()));
     }
 }
 
@@ -56,11 +54,12 @@ pub fn play_music_system(
 ) {
     for event in play_music_events.read() {
         debug!("play_music_event {:?}", event);
-        let sink = music_controller_query.single_mut();
-        if event.0 {
-            sink.play();
-        } else {
-            sink.pause();
+        if let Ok(sink) = music_controller_query.single_mut() {
+            if event.0 {
+                sink.play();
+            } else {
+                sink.pause();
+            }
         }
     }
 }

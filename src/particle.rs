@@ -27,9 +27,9 @@ pub fn update_system(
         } else {
             let translation = &mut transform.translation;
             translation.x += (particle.delta.x + (random::<f32>() - 0.5) * particle.delta_random.x)
-                * time.delta_seconds();
+                * time.delta_secs();
             translation.y += (particle.delta.y + (random::<f32>() - 0.5) * particle.delta_random.y)
-                * time.delta_seconds();
+                * time.delta_secs();
         }
     }
 }
@@ -47,11 +47,16 @@ pub fn spawn_particle(
             delta,
             delta_random,
         },
-        SpriteBundle {
-            texture: image.0.clone(),
-            transform: Transform::from_xyz(pos.x, pos.y, 0.0),
+        // SpriteBundle {
+        //     texture: image.0.clone(),
+        //     transform: Transform::from_xyz(pos.x, pos.y, 0.0),
+        //     ..default()
+        // },
+        Sprite {
+            image: image.0.clone(),
             ..default()
         },
+        Transform::from_xyz(pos.x, pos.y, 0.0),
     ));
 }
 
