@@ -34,7 +34,7 @@ fn main() {
             }),
             ..default()
         }))
-        .add_plugins(FrameTimeDiagnosticsPlugin)
+        .add_plugins(FrameTimeDiagnosticsPlugin::default())
         .insert_resource(ClearColor(Color::BLACK))
         // .add_event::<audio::PlaySoundEvent>()
         // .add_event::<audio::PlayMusicEvent>()

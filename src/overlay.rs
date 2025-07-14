@@ -89,19 +89,8 @@ pub fn setup(mut commands: Commands) {
 
     // Status Bar
     commands
-        .spawn(Node {
-            position_type: PositionType::Absolute,
-            top: Val::Px(5.0),
-            left: Val::Px(15.0),
-            ..default()
-        })
-        .with_child((
-            Text::new("LIVES"),
-            TextFont {
-                font_size: STATUS_BAR_FONT_SIZE,
-                ..Default::default()
-            },
-            TextColor(WHITE.into()),
+        .spawn((
+            Text::new("--"),
             Node {
                 position_type: PositionType::Absolute,
                 top: Val::Px(5.0),
@@ -110,12 +99,30 @@ pub fn setup(mut commands: Commands) {
             },
         ))
         .with_child((
+            Text::new("LIVES"),
+            TextFont {
+                font_size: STATUS_BAR_FONT_SIZE,
+                ..Default::default()
+            },
+            TextColor(WHITE.into()),
+            // Node {
+            //     position_type: PositionType::Absolute,
+            //     top: Val::Px(5.0),
+            //     left: Val::Px(15.0),
+            //     ..default()
+            // },
+        ))
+        .with_child((
             TextSpan::default(),
             TextFont {
                 font_size: STATUS_BAR_FONT_SIZE,
                 ..default()
             },
             TextColor(GOLD.into()),
+            Node {
+                position_type: PositionType::Relative,
+                ..default()
+            },
             LivesText,
         ));
 
@@ -297,12 +304,13 @@ pub fn state_update_system(
     mut show_state_query: Query<&mut Visibility, With<ShowState>>,
     // mut game_state_query: Query<(&mut Visibility, &mut Text, &Overlay), Without<ShowState>>,
 ) {
-    let mut show_state_visibilty = show_state_query.single_mut();
-    *show_state_visibilty = if store.show_state {
-        Visibility::Visible
-    } else {
-        Visibility::Hidden
-    };
+    for mut show_state_visibilty in show_state_query {
+        *show_state_visibilty = if store.show_state {
+            Visibility::Visible
+        } else {
+            Visibility::Hidden
+        }
+    }
 
     // // compute alpha from sinus of ratio between elapse time and timer duration
 
