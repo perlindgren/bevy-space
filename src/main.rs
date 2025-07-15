@@ -12,8 +12,8 @@ use bevy_space::{
     game_state,
     keyboard_input,
     overlay,
-    // alien, audio, bunker, common::*, game_state, gamepad, hit_detection, keyboard_input, lazer,
-    // overlay, particle, player,
+    player, // alien, audio, bunker, common::*, game_state, gamepad, hit_detection, keyboard_input, lazer,
+            // overlay, particle, player,
 };
 
 fn setup(mut commands: Commands) {
@@ -39,13 +39,13 @@ fn main() {
         // .add_event::<audio::PlayMusicEvent>()
         // .add_event::<lazer::FireLazerEvent>()
         .add_event::<game_state::GameStateEvent>()
-        //.add_event::<player::PlayerEvent>()
+        .add_event::<player::PlayerEvent>()
         .add_systems(
             Startup,
             (
                 setup,
                 game_state::setup,
-                // player::setup,
+                player::setup,
                 // lazer::setup,
                 // alien::setup,
                 // bunker::setup,
@@ -61,8 +61,8 @@ fn main() {
                 (
                     keyboard_input::update_system,
                     // hit_detection::update_system,
-                    // player::update_system,
-                    // player::blink_update_system,
+                    player::update_system,
+                    player::blink_update_system,
                     // lazer::update_system,
                     // alien::update_system,
                     // alien::bullet_update_system,
