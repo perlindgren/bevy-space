@@ -1,5 +1,5 @@
 pub mod alien;
-// pub mod audio;
+pub mod audio;
 pub mod bunker;
 pub mod common;
 pub mod game_state;

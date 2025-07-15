@@ -143,7 +143,7 @@ pub fn setup(mut commands: Commands) {
             position_type: PositionType::Absolute,
             justify_content: JustifyContent::Center,
             align_self: AlignSelf::Center,
-
+            min_width: Val::Percent(100.0),
             ..default()
         },))
         .with_children(|builder| {

@@ -9,12 +9,13 @@ use bevy::{diagnostic::FrameTimeDiagnosticsPlugin, prelude::*, window::WindowRes
 
 use bevy_space::{
     alien,
+    audio,
     bunker,
     common::*,
     game_state,
     hit_detection,
     keyboard_input,
-    lazer, // audio,  gamepad,
+    lazer, // ,  gamepad,
     overlay,
     particle,
     player,
@@ -39,8 +40,8 @@ fn main() {
         }))
         .add_plugins(FrameTimeDiagnosticsPlugin::default())
         .insert_resource(ClearColor(Color::BLACK))
-        // .add_event::<audio::PlaySoundEvent>()
-        // .add_event::<audio::PlayMusicEvent>()
+        .add_event::<audio::PlaySoundEvent>()
+        .add_event::<audio::PlayMusicEvent>()
         .add_event::<lazer::FireLazerEvent>()
         .add_event::<game_state::GameStateEvent>()
         .add_event::<player::PlayerEvent>()
@@ -55,7 +56,7 @@ fn main() {
                 bunker::setup,
                 overlay::setup,
                 particle::setup,
-                // audio::setup,
+                audio::setup,
             )
                 .chain(),
         )
@@ -78,10 +79,11 @@ fn main() {
                     // lazer::fire_lazer_system,
                     particle::update_system,
                     // gamepad::update_system,
-                ), //.before(audio::audio_hit_system),
+                )
+                    .before(audio::audio_hit_system),
                 (
-                    // audio::audio_hit_system,
-                    // audio::play_music_system,
+                    audio::audio_hit_system,
+                    audio::play_music_system,
                     lazer::fire_lazer_system,
                     game_state::game_state_event_system,
                 ),

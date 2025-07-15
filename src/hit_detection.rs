@@ -1,6 +1,6 @@
 use crate::{
     alien::*,
-    //audio::*,
+    audio::*,
     bunker::*,
     common::*,
     // game_state::{GameState, StateTransitionTimer, Store},
@@ -17,7 +17,7 @@ pub fn update_system(
     mut store: ResMut<Store>,
     image: Res<CrossImage>,
     mut game_state_ew: EventWriter<GameStateEvent>,
-    // mut play_sound_ew: EventWriter<PlaySoundEvent>,
+    mut play_sound_ew: EventWriter<PlaySoundEvent>,
     alien_query: Query<(Entity, &Transform), With<Alien>>,
     mut lazer_query: Query<(&mut Lazer, &Transform)>,
     mut bunker_query: Query<(&mut Sprite, Entity, &Transform), With<Bunker>>,
@@ -134,7 +134,7 @@ pub fn update_system(
             for (alien_entity, enemy_transform) in &alien_query {
                 // Collision check
                 if in_rect(lazer_transform, enemy_transform, ALIEN_SIZE) {
-                    // play_sound_ew.send(PlaySoundEvent::AlienHit);
+                    play_sound_ew.write(PlaySoundEvent::AlienHit);
                     commands.entity(alien_entity).despawn();
                     *lazer = Lazer::Idle;
                     store.aliens_killed += 1;
