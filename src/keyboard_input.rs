@@ -1,14 +1,9 @@
-use crate::{
-    common::*,
-    game_state::*,
-    // lazer::FireLazerEvent,
-    player::PlayerEvent,
-};
+use crate::{common::*, game_state::*, lazer::FireLazerEvent, player::PlayerEvent};
 use bevy::prelude::*;
 
 /// keyboard input
 pub fn update_system(
-    // mut fire_lazer_ew: EventWriter<FireLazerEvent>,
+    mut fire_lazer_ew: EventWriter<FireLazerEvent>,
     mut game_state_ew: EventWriter<GameStateEvent>,
     mut player_ew: EventWriter<PlayerEvent>,
     store: Res<Store>,
@@ -44,7 +39,7 @@ pub fn update_system(
                 || keyboard_input.pressed(KeyCode::ArrowUp)
             {
                 debug!("-- fire lazer event sent --");
-                // fire_lazer_ew.send(FireLazerEvent);
+                fire_lazer_ew.send(FireLazerEvent);
             }
         }
         _ => {}

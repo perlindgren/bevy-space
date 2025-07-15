@@ -11,49 +11,49 @@ pub struct Particle {
     delta_random: Vec2,
 }
 
-pub fn update_system(
-    time: Res<Time>,
-    mut commands: Commands,
-    mut bullet_query: Query<(Entity, &mut Sprite, &mut Transform, &mut Particle)>,
-) {
-    for (entity, mut sprite, mut transform, mut particle) in &mut bullet_query {
-        particle.timer.tick(time.delta());
+// pub fn update_system(
+//     time: Res<Time>,
+//     mut commands: Commands,
+//     mut bullet_query: Query<(Entity, &mut Sprite, &mut Transform, &mut Particle)>,
+// ) {
+//     for (entity, mut sprite, mut transform, mut particle) in &mut bullet_query {
+//         particle.timer.tick(time.delta());
 
-        let ratio = 1.0 - particle.timer.elapsed().as_secs_f32() / PARTICLE_DURATION;
-        sprite.color.set_alpha(ratio);
+//         let ratio = 1.0 - particle.timer.elapsed().as_secs_f32() / PARTICLE_DURATION;
+//         sprite.color.set_alpha(ratio);
 
-        if particle.timer.just_finished() {
-            commands.entity(entity).despawn();
-        } else {
-            let translation = &mut transform.translation;
-            translation.x += (particle.delta.x + (random::<f32>() - 0.5) * particle.delta_random.x)
-                * time.delta_seconds();
-            translation.y += (particle.delta.y + (random::<f32>() - 0.5) * particle.delta_random.y)
-                * time.delta_seconds();
-        }
-    }
-}
+//         if particle.timer.just_finished() {
+//             commands.entity(entity).despawn();
+//         } else {
+//             let translation = &mut transform.translation;
+//             translation.x += (particle.delta.x + (random::<f32>() - 0.5) * particle.delta_random.x)
+//                 * time.delta_seconds();
+//             translation.y += (particle.delta.y + (random::<f32>() - 0.5) * particle.delta_random.y)
+//                 * time.delta_seconds();
+//         }
+//     }
+// }
 
-pub fn spawn_particle(
-    mut commands: Commands,
-    image: Res<CrossImage>,
-    pos: Vec2,
-    delta: Vec2,
-    delta_random: Vec2,
-) {
-    commands.spawn((
-        Particle {
-            timer: Timer::new(Duration::from_secs_f32(PARTICLE_DURATION), TimerMode::Once),
-            delta,
-            delta_random,
-        },
-        SpriteBundle {
-            texture: image.0.clone(),
-            transform: Transform::from_xyz(pos.x, pos.y, 0.0),
-            ..default()
-        },
-    ));
-}
+// pub fn spawn_particle(
+//     mut commands: Commands,
+//     image: Res<CrossImage>,
+//     pos: Vec2,
+//     delta: Vec2,
+//     delta_random: Vec2,
+// ) {
+//     commands.spawn((
+//         Particle {
+//             timer: Timer::new(Duration::from_secs_f32(PARTICLE_DURATION), TimerMode::Once),
+//             delta,
+//             delta_random,
+//         },
+//         SpriteBundle {
+//             texture: image.0.clone(),
+//             transform: Transform::from_xyz(pos.x, pos.y, 0.0),
+//             ..default()
+//         },
+//     ));
+// }
 
 pub fn spawn_explosion(
     commands: &mut Commands,
@@ -72,11 +72,8 @@ pub fn spawn_explosion(
                 delta: (speed * angle.sin(), speed * angle.cos()).into(),
                 delta_random,
             },
-            SpriteBundle {
-                texture: image.0.clone(),
-                transform: Transform::from_xyz(pos.x, pos.y, 0.0),
-                ..default()
-            },
+            Sprite::from_image(image.0.clone()),
+            Transform::from_xyz(pos.x, pos.y, 0.0),
         ));
     }
 }

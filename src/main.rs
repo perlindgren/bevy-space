@@ -11,9 +11,11 @@ use bevy_space::{
     common::*,
     game_state,
     keyboard_input,
+    lazer, // alien, audio, bunker, common::*, game_state, gamepad, hit_detection, keyboard_input, lazer,
     overlay,
-    player, // alien, audio, bunker, common::*, game_state, gamepad, hit_detection, keyboard_input, lazer,
-            // overlay, particle, player,
+    // overlay, particle, player,
+    particle,
+    player,
 };
 
 fn setup(mut commands: Commands) {
@@ -37,7 +39,7 @@ fn main() {
         .insert_resource(ClearColor(Color::BLACK))
         // .add_event::<audio::PlaySoundEvent>()
         // .add_event::<audio::PlayMusicEvent>()
-        // .add_event::<lazer::FireLazerEvent>()
+        .add_event::<lazer::FireLazerEvent>()
         .add_event::<game_state::GameStateEvent>()
         .add_event::<player::PlayerEvent>()
         .add_systems(
@@ -46,11 +48,11 @@ fn main() {
                 setup,
                 game_state::setup,
                 player::setup,
-                // lazer::setup,
+                lazer::setup,
                 // alien::setup,
                 // bunker::setup,
                 overlay::setup,
-                // particle::setup,
+                particle::setup,
                 // audio::setup,
             )
                 .chain(),
@@ -71,13 +73,14 @@ fn main() {
                     overlay::score_update_system,
                     overlay::state_update_system,
                     game_state::update_system,
+                    lazer::fire_lazer_system,
                     // particle::update_system,
                     // gamepad::update_system,
                 ), //.before(audio::audio_hit_system),
                 (
                     // audio::audio_hit_system,
                     // audio::play_music_system,
-                    // lazer::fire_lazer_system,
+                    //lazer::fire_lazer_system,
                     game_state::game_state_event_system,
                 ),
             ),
