@@ -12,8 +12,9 @@ use bevy_space::{
     bunker,
     common::*,
     game_state,
+    hit_detection,
     keyboard_input,
-    lazer, // audio,  gamepad, hit_detection, keyboard_input, lazer,
+    lazer, // audio,  gamepad,
     overlay,
     particle,
     player,
@@ -63,7 +64,7 @@ fn main() {
             (
                 (
                     keyboard_input::update_system,
-                    // hit_detection::update_system,
+                    hit_detection::update_system,
                     player::update_system,
                     player::blink_update_system,
                     lazer::update_system,

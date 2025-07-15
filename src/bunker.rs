@@ -5,7 +5,7 @@ use bevy::prelude::*;
 pub struct Bunker;
 
 #[inline(always)]
-pub fn hit_bunker(commands: &mut Commands, entity: Entity, mut atlas: Mut<TextureAtlas>) {
+pub fn hit_bunker(commands: &mut Commands, entity: Entity, atlas: &mut TextureAtlas) {
     if atlas.index < 10 {
         atlas.index += 5;
     } else {
