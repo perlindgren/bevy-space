@@ -48,11 +48,6 @@ pub fn blink_update_system(
 pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn((
         Player,
-        // SpriteBundle {
-        //     texture: asset_server.load("sprites/space.png"),
-        //     transform: Transform::from_xyz(0., -SCENE_HEIGHT, 0.),
-        //     ..default()
-        // },
         Sprite::from_image(asset_server.load("sprites/space.png")),
         Transform::from_xyz(0., -SCENE_HEIGHT, 0.),
     ));

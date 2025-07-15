@@ -3,7 +3,7 @@ use bevy::prelude::*;
 use rand::random;
 use std::time::Duration;
 
-#[derive(Component, PartialEq, Clone)]
+#[derive(Component, PartialEq, Clone, Debug)]
 pub enum Lazer {
     Fire,
     Fired(Timer),
@@ -22,8 +22,9 @@ pub fn fire_lazer_system(
         fire_lazer_event.clear();
         if let Ok(mut lazer) = lazer_query.single_mut() {
             if *lazer == Lazer::Idle {
-                *lazer = Lazer::Fire
+                *lazer = Lazer::Fire;
             }
+            info!("lazer {:?}", lazer);
         }
     }
 }
@@ -41,6 +42,7 @@ pub fn update_system(
     {
         match &mut *lazer {
             Lazer::Fire => {
+                info!("you are fired");
                 transform.translation =
                     player_transform.translation + Vec3::new(0.0, PLAYER_HEIGHT, 0.0);
                 *lazer = Lazer::Fired(Timer::new(
@@ -65,13 +67,13 @@ pub fn update_system(
             Lazer::Fired(timer) => {
                 timer.tick(time.delta());
                 if timer.just_finished() {
-                    // spawn_particle(
-                    //     commands,
-                    //     image,
-                    //     (transform.translation.x, transform.translation.y).into(),
-                    //     (30.0 * (random::<f32>() - 0.5), -LAZER_SPEED * 0.1).into(),
-                    //     (0.0, 0.0).into(),
-                    // );
+                    spawn_particle(
+                        commands,
+                        image,
+                        (transform.translation.x, transform.translation.y).into(),
+                        (30.0 * (random::<f32>() - 0.5), -LAZER_SPEED * 0.1).into(),
+                        (0.0, 0.0).into(),
+                    );
                 }
 
                 if transform.translation.y > SCENE_HEIGHT {
@@ -90,13 +92,7 @@ pub fn update_system(
 pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn((
         Lazer::Idle,
-        // SpriteBundle {
-        //     texture: asset_server.load("sprites/lazer.png"),
-        //     transform: Transform::from_xyz(0., SCENE_HEIGHT, 0.),
-        //     visibility: Visibility::Hidden,
-        //     ..default()
-        // },
-        Sprite::from_image(asset_server.load("sprites/space.png")),
+        Sprite::from_image(asset_server.load("sprites/lazer.png")),
         Transform::from_xyz(0., SCENE_HEIGHT, 0.),
         Visibility::Hidden,
     ));

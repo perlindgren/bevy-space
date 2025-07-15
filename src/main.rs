@@ -11,9 +11,8 @@ use bevy_space::{
     common::*,
     game_state,
     keyboard_input,
-    lazer, // alien, audio, bunker, common::*, game_state, gamepad, hit_detection, keyboard_input, lazer,
+    lazer, // alien, audio, bunker,  gamepad, hit_detection, keyboard_input, lazer,
     overlay,
-    // overlay, particle, player,
     particle,
     player,
 };
@@ -65,7 +64,7 @@ fn main() {
                     // hit_detection::update_system,
                     player::update_system,
                     player::blink_update_system,
-                    // lazer::update_system,
+                    lazer::update_system,
                     // alien::update_system,
                     // alien::bullet_update_system,
                     // alien::animate_update_system,
@@ -74,7 +73,7 @@ fn main() {
                     overlay::state_update_system,
                     game_state::update_system,
                     lazer::fire_lazer_system,
-                    // particle::update_system,
+                    particle::update_system,
                     // gamepad::update_system,
                 ), //.before(audio::audio_hit_system),
                 (
