@@ -1,7 +1,7 @@
 use crate::{
-    // alien,
+    alien,
     // audio::PlayMusicEvent,
-    // bunker::{self, Bunker},
+    bunker::{self, Bunker},
     common::*,
 };
 use bevy::prelude::*;
@@ -69,7 +69,7 @@ where
     T: Component,
 {
     for item in &query {
-        commands.entity(item).despawn_recursive();
+        commands.entity(item).despawn();
     }
 }
 
@@ -146,9 +146,9 @@ pub fn update_system(
 
     asset_server: Res<AssetServer>,
     mut texture_atlas_layout: ResMut<Assets<TextureAtlasLayout>>,
-    // alien_query: Query<Entity, With<alien::Alien>>,
-    // alien_bullet_query: Query<Entity, With<alien::AlienBullet>>,
-    // bunker_query: Query<Entity, With<Bunker>>,
+    alien_query: Query<Entity, With<alien::Alien>>,
+    alien_bullet_query: Query<Entity, With<alien::AlienBullet>>,
+    bunker_query: Query<Entity, With<Bunker>>,
 ) {
     timer.tick(time.delta());
 
@@ -165,19 +165,19 @@ pub fn update_system(
             GameState::InsertCoin => GameState::LeaderBoard,
             GameState::LeaderBoard => GameState::InsertCoin,
             GameState::Start | GameState::NewWave => {
-                // alien::reset(
-                //     &mut commands,
-                //     &asset_server,
-                //     &mut texture_atlas_layout,
-                //     alien_query,
-                //     alien_bullet_query,
-                // );
-                // bunker::reset(
-                //     &mut commands,
-                //     &asset_server,
-                //     &mut texture_atlas_layout,
-                //     bunker_query,
-                // );
+                alien::reset(
+                    &mut commands,
+                    &asset_server,
+                    &mut texture_atlas_layout,
+                    alien_query,
+                    alien_bullet_query,
+                );
+                bunker::reset(
+                    &mut commands,
+                    &asset_server,
+                    &mut texture_atlas_layout,
+                    bunker_query,
+                );
 
                 if store.game_state == GameState::Start {
                     debug!("--- Start ---");

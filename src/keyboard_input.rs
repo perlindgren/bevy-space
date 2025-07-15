@@ -39,7 +39,7 @@ pub fn update_system(
                 || keyboard_input.pressed(KeyCode::ArrowUp)
             {
                 debug!("-- fire lazer event sent --");
-                fire_lazer_ew.send(FireLazerEvent);
+                fire_lazer_ew.write(FireLazerEvent);
             }
         }
         _ => {}

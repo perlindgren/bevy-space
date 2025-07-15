@@ -300,8 +300,8 @@ pub fn state_update_system(
     show_state_query: Query<&mut Visibility, With<ShowFps>>,
     game_state_query: Query<(&mut Visibility, &mut TextColor, &Overlay), Without<ShowFps>>,
 ) {
-    for mut show_state_visibilty in show_state_query {
-        *show_state_visibilty = if store.show_state {
+    for mut show_state_visibility in show_state_query {
+        *show_state_visibility = if store.show_state {
             Visibility::Visible
         } else {
             Visibility::Hidden

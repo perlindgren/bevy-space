@@ -35,11 +35,10 @@ pub fn update_system(
 
     let commands = &mut commands;
 
-    // get lazer singleton
-    let (mut lazer, lazer_transform) = lazer_query.get_single_mut().unwrap();
-
-    // get a player singleton
-    if let Ok(player_transform) = player_query.single_mut() {
+    // get lazer and player singletons
+    if let (Ok((mut lazer, lazer_transform)), Ok(player_transform)) =
+        (lazer_query.single_mut(), player_query.single_mut())
+    {
         // alien bullets
         for (bullet_entity, bullet_transform) in &alien_bullet_query {
             // hit player missile
@@ -63,7 +62,7 @@ pub fn update_system(
             // hit player
             if in_rect(bullet_transform, player_transform, PLAYER_SIZE) {
                 commands.entity(bullet_entity).despawn();
-                game_state_ew.send(GameStateEvent::LooseLife);
+                game_state_ew.write(GameStateEvent::LooseLife);
                 // to prevent the rare race-condition when outstanding missile would cause an extra life
 
                 *lazer = Lazer::Idle;
@@ -97,11 +96,10 @@ pub fn update_system(
                             commands,
                             &image,
                             10,
-                            (
+                            Vec2::from((
                                 bullet_transform.translation.x,
                                 bullet_transform.translation.y,
-                            )
-                                .into(),
+                            )),
                             150.0,
                             0.0,
                             (10.0, 10.0).into(),
@@ -155,7 +153,7 @@ pub fn update_system(
 
                     if store.aliens_killed == ALIENS_TOTAL {
                         debug!("-- send new wave --");
-                        game_state_ew.send(GameStateEvent::NewWave);
+                        game_state_ew.write(GameStateEvent::NewWave);
                     }
                 }
             }
