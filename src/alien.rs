@@ -22,16 +22,18 @@ pub struct AnimationTimer(Timer);
 
 pub fn animate_update_system(
     time: Res<Time>,
-    mut query: Query<(&AnimationIndices, &mut AnimationTimer, &mut TextureAtlas)>,
+    mut query: Query<(&AnimationIndices, &mut AnimationTimer, &mut Sprite)>,
 ) {
-    for (indices, mut timer, mut atlas) in &mut query {
+    for (indices, mut timer, mut sprite) in &mut query {
         timer.tick(time.delta());
         if timer.just_finished() {
-            atlas.index = if atlas.index == indices.last {
-                indices.first
-            } else {
-                atlas.index + 1
-            };
+            if let Some(atlas) = &mut sprite.texture_atlas {
+                atlas.index = if atlas.index == indices.last {
+                    indices.first
+                } else {
+                    atlas.index + 1
+                };
+            }
         }
     }
 }
@@ -59,7 +61,7 @@ pub fn bullet_update_system(
             );
             commands.entity(entity).despawn();
         } else {
-            transform.translation.y -= ALIEN_BULLET_SPEED * time.delta_seconds();
+            transform.translation.y -= ALIEN_BULLET_SPEED * time.delta_secs();
         }
     }
 }
@@ -82,7 +84,7 @@ pub fn update_system(
 ) {
     let mut new_direction = None;
 
-    let delta = time.delta_seconds();
+    let delta = time.delta_secs();
 
     let mut y_min = f32::MAX;
 
@@ -148,11 +150,13 @@ pub fn update_system(
 
             commands.spawn((
                 AlienBullet,
-                SpriteBundle {
-                    transform: *transform,
-                    texture,
-                    ..default()
-                },
+                // SpriteBundle {
+                //     transform: *transform,
+                //     texture,
+                //     ..default()
+                // },
+                Sprite::from_image(texture),
+                *transform,
             ));
         }
     }
@@ -179,19 +183,27 @@ pub fn setup_borrowed(
                 Alien {
                     direction: Direction3::Right,
                 },
-                SpriteBundle {
-                    transform: Transform::from_xyz(
-                        (x as f32 - ALIENS_COL as f32 / 2.0) * step_x,
-                        SCENE_HEIGHT - 100.0 - (y as f32 * step_y),
-                        -1.0, // behind in scene
-                    ),
-                    texture: texture.clone(),
-                    ..default()
-                },
-                TextureAtlas {
-                    layout: texture_atlas_layout.clone(),
-                    index: animation_indices.first,
-                },
+                // SpriteBundle {
+                //     transform: Transform::from_xyz(
+                //         (x as f32 - ALIENS_COL as f32 / 2.0) * step_x,
+                //         SCENE_HEIGHT - 100.0 - (y as f32 * step_y),
+                //         -1.0, // behind in scene
+                //     ),
+                //     texture: texture.clone(),
+                //     ..default()
+                // },
+                Sprite::from_atlas_image(
+                    texture.clone(),
+                    TextureAtlas {
+                        layout: texture_atlas_layout.clone(),
+                        index: animation_indices.first,
+                    },
+                ),
+                Transform::from_xyz(
+                    (x as f32 - ALIENS_COL as f32 / 2.0) * step_x,
+                    SCENE_HEIGHT - 100.0 - (y as f32 * step_y),
+                    -1.0, // behind in scene
+                ),
                 animation_indices,
                 AnimationTimer(Timer::from_seconds(0.05, TimerMode::Repeating)),
             ));
@@ -220,6 +232,7 @@ pub fn reset(
     alien_query: Query<Entity, With<Alien>>,
     alien_bullet_query: Query<Entity, With<AlienBullet>>,
 ) {
+    info!("alien reset");
     cleanup_state(commands, alien_query);
     cleanup_state(commands, alien_bullet_query);
     setup_borrowed(commands, asset_server, texture_atlas_layout);

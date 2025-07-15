@@ -1,4 +1,4 @@
-// pub mod alien;
+pub mod alien;
 // pub mod audio;
 // pub mod bunker;
 pub mod common;
