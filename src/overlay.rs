@@ -141,7 +141,7 @@ pub fn setup(mut commands: Commands) {
     commands
         .spawn((Node {
             position_type: PositionType::Absolute,
-            // justify_content: JustifyContent::Center,
+            justify_content: JustifyContent::Center,
             align_self: AlignSelf::Center,
 
             ..default()
@@ -165,9 +165,9 @@ pub fn setup(mut commands: Commands) {
     commands
         .spawn((Node {
             position_type: PositionType::Absolute,
-            // justify_content: JustifyContent::Center,
+            justify_content: JustifyContent::Center,
             align_self: AlignSelf::Center,
-
+            min_width: Val::Percent(100.0),
             ..default()
         },))
         .with_children(|builder| {
@@ -189,9 +189,9 @@ pub fn setup(mut commands: Commands) {
     commands
         .spawn((Node {
             position_type: PositionType::Absolute,
-            // justify_content: JustifyContent::Center,
+            justify_content: JustifyContent::Center,
             align_self: AlignSelf::Center,
-
+            min_width: Val::Percent(100.0),
             ..default()
         },))
         .with_children(|builder| {
@@ -213,9 +213,9 @@ pub fn setup(mut commands: Commands) {
     commands
         .spawn((Node {
             position_type: PositionType::Absolute,
-            // justify_content: JustifyContent::Center,
+            justify_content: JustifyContent::Center,
             align_self: AlignSelf::Center,
-
+            min_width: Val::Percent(100.0),
             ..default()
         },))
         .with_children(|builder| {
@@ -237,9 +237,9 @@ pub fn setup(mut commands: Commands) {
     commands
         .spawn((Node {
             position_type: PositionType::Absolute,
-            // justify_content: JustifyContent::Center,
+            justify_content: JustifyContent::Center,
             align_self: AlignSelf::Center,
-
+            min_width: Val::Percent(100.0),
             ..default()
         },))
         .with_children(|builder| {
