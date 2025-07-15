@@ -68,14 +68,19 @@ pub fn bullet_update_system(
 
 #[derive(Resource)]
 pub struct AlienResource {
-    image_handle: Handle<Image>,
     bullet_spawn_timer: Instant,
+}
+
+#[derive(Resource)]
+pub struct BulletResource {
+    image_handle: Handle<Image>,
 }
 
 /// alien movement and shooting
 pub fn update_system(
     time: Res<Time>,
     mut alien_resource: ResMut<AlienResource>,
+    bullet_resource: Res<BulletResource>,
 
     store: Res<Store>,
     mut commands: Commands,
@@ -83,11 +88,8 @@ pub fn update_system(
     mut aliens: Query<(&mut Alien, &mut Transform)>,
 ) {
     let mut new_direction = None;
-
     let delta = time.delta_secs();
-
     let mut y_min = f32::MAX;
-
     for (alien, mut transform) in &mut aliens {
         y_min = y_min.min(transform.translation.y);
         match alien.direction {
@@ -124,40 +126,32 @@ pub fn update_system(
         let x = x as i32;
         if let Some(y_min) = hm.get(&x) {
             if y < *y_min {
-                hm.insert(x, y);
+                hm.insert(x, y); // update x with the lowest y
             }
         } else {
-            hm.insert(x, y);
+            hm.insert(x, y); // insert new column x with y
         }
     });
 
     // filter out candidates at lowest row for each column
-    let mut aliens = aliens.iter_mut().filter(|(_, t)| {
+    let aliens = aliens.iter().filter(|(_, t)| {
         let Vec3 { x, y, z: _ } = t.translation;
         let x = x as i32;
         &y == hm.get(&x).unwrap()
     });
 
-    for (_, transform) in &mut aliens {
-        // drop bullet?
+    for (_, transform) in aliens {
+        // should a specific alien drop a bullet? more likely with less aliens.
         if alien_resource.bullet_spawn_timer.elapsed()
             > Duration::from_secs_f32(store.bullet_interval)
             && rand::random::<f32>() < 1.0f32 / (hm.len() as f32)
         {
             alien_resource.bullet_spawn_timer = Instant::now();
             trace!("bullet spawned {:?}", alien_resource.bullet_spawn_timer);
-            let texture = alien_resource.image_handle.clone();
+            // can't we do this without cloning?
+            let texture = bullet_resource.image_handle.clone();
 
-            commands.spawn((
-                AlienBullet,
-                // SpriteBundle {
-                //     transform: *transform,
-                //     texture,
-                //     ..default()
-                // },
-                Sprite::from_image(texture),
-                *transform,
-            ));
+            commands.spawn((AlienBullet, Sprite::from_image(texture), *transform));
         }
     }
 }
@@ -183,15 +177,6 @@ pub fn setup_borrowed(
                 Alien {
                     direction: Direction3::Right,
                 },
-                // SpriteBundle {
-                //     transform: Transform::from_xyz(
-                //         (x as f32 - ALIENS_COL as f32 / 2.0) * step_x,
-                //         SCENE_HEIGHT - 100.0 - (y as f32 * step_y),
-                //         -1.0, // behind in scene
-                //     ),
-                //     texture: texture.clone(),
-                //     ..default()
-                // },
                 Sprite::from_atlas_image(
                     texture.clone(),
                     TextureAtlas {
@@ -220,10 +205,14 @@ pub fn setup(
     setup_borrowed(&mut commands, &asset_server, &mut texture_atlas_layouts);
     // Loads bullet sprite and store resource
     commands.insert_resource(AlienResource {
-        image_handle: asset_server.load("sprites/drop.png"),
         bullet_spawn_timer: Instant::now(),
-    })
+    });
+
+    commands.insert_resource(BulletResource {
+        image_handle: asset_server.load("sprites/drop.png"),
+    });
 }
+
 // reset the aliens
 pub fn reset(
     commands: &mut Commands,
