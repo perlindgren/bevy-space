@@ -14,7 +14,7 @@ use crate::{
 
 //
 #[derive(Component)]
-pub struct ShowState;
+pub struct ShowFps;
 
 #[derive(Component)]
 pub struct FpsText;
@@ -40,7 +40,7 @@ pub fn setup(mut commands: Commands) {
     // Show FPS
     commands
         .spawn((
-            ShowState,
+            ShowFps,
             Text::new("FPS"),
             TextFont {
                 font_size: STATUS_BAR_FONT_SIZE,
@@ -137,104 +137,125 @@ pub fn setup(mut commands: Commands) {
                 ));
         });
 
-    // GameOver
-    commands.spawn((
-        Overlay {
-            game_state: GameState::GameOver,
-        },
-        // TextBundle::from_section(
-        //     "   GAME OVER", // Ugly, but works
-        //     TextStyle {
-        //         font_size: GAME_OVER_FONT_SIZE,
-        //         color: RED.into(),
-        //         ..default()
-        //     },
-        // )
-        // .with_style(Style {
-        //     position_type: PositionType::Absolute,
-        //     align_self: AlignSelf::Center,
-        //     ..default()
-        // }),
-    ));
-    // Insert Coin
-    commands.spawn((
-        Overlay {
-            game_state: GameState::InsertCoin,
-        },
-        // TextBundle::from_section(
-        //     "   Press Enter\n       to\n   Insert Coin", // Ugly, but works
-        //     TextStyle {
-        //         font_size: INSERT_COIN_FONT_SIZE,
-        //         color: MAGENTA.into(),
-        //         ..default()
-        //     },
-        // )
-        // .with_style(Style {
-        //     position_type: PositionType::Absolute,
-        //     align_self: AlignSelf::Center,
-        //     ..default()
-        // }),
-    ));
+    // Show GameOver
+    commands
+        .spawn((Node {
+            position_type: PositionType::Absolute,
+            // justify_content: JustifyContent::Center,
+            align_self: AlignSelf::Center,
 
-    // Start
-    commands.spawn((
-        Overlay {
-            game_state: GameState::Start,
-        },
-        // TextBundle::from_section(
-        //     "   Let's Go", // Ugly, but works
-        //     TextStyle {
-        //         font_size: START_FONT_SIZE,
-        //         color: YELLOW.into(),
-        //         ..default()
-        //     },
-        // )
-        // .with_style(Style {
-        //     position_type: PositionType::Absolute,
-        //     align_self: AlignSelf::Center,
-        //     ..default()
-        // }),
-    ));
+            ..default()
+        },))
+        .with_children(|builder| {
+            builder.spawn((
+                Overlay {
+                    game_state: GameState::GameOver,
+                },
+                Text::new("Game Over"),
+                TextFont {
+                    font_size: INSERT_COIN_FONT_SIZE,
+                    ..Default::default()
+                },
+                TextColor(RED.into()),
+                TextLayout::new_with_justify(JustifyText::Center),
+            ));
+        });
 
-    // New Wave
-    commands.spawn((
-        Overlay {
-            game_state: GameState::NewWave,
-        },
-        // TextBundle::from_section(
-        //     "    New Wave", // Ugly, but works
-        //     TextStyle {
-        //         font_size: NEW_WAVE_FONT_SIZE,
-        //         color: YELLOW.into(),
-        //         ..default()
-        //     },
-        // )
-        // .with_style(Style {
-        //     position_type: PositionType::Absolute,
-        //     align_self: AlignSelf::Center,
-        //     ..default()
-        // }),
-    ));
+    // Show Insert Coin
+    commands
+        .spawn((Node {
+            position_type: PositionType::Absolute,
+            // justify_content: JustifyContent::Center,
+            align_self: AlignSelf::Center,
 
-    // Leader Board
-    commands.spawn((
-        Overlay {
-            game_state: GameState::LeaderBoard,
-        },
-        // TextBundle::from_section(
-        //     " Leader Board", // Ugly, but works
-        //     TextStyle {
-        //         font_size: LEADER_BOARD_FONT_SIZE,
-        //         color: DARK_CYAN.into(),
-        //         ..default()
-        //     },
-        // )
-        // .with_style(Style {
-        //     position_type: PositionType::Absolute,
-        //     align_self: AlignSelf::Center,
-        //     ..default()
-        // }),
-    ));
+            ..default()
+        },))
+        .with_children(|builder| {
+            builder.spawn((
+                Overlay {
+                    game_state: GameState::InsertCoin,
+                },
+                Text::new("Press Enter\nto\nInsert Coin"),
+                TextFont {
+                    font_size: INSERT_COIN_FONT_SIZE,
+                    ..Default::default()
+                },
+                TextColor(MAGENTA.into()),
+                TextLayout::new_with_justify(JustifyText::Center),
+            ));
+        });
+
+    // Show Start
+    commands
+        .spawn((Node {
+            position_type: PositionType::Absolute,
+            // justify_content: JustifyContent::Center,
+            align_self: AlignSelf::Center,
+
+            ..default()
+        },))
+        .with_children(|builder| {
+            builder.spawn((
+                Overlay {
+                    game_state: GameState::Start,
+                },
+                Text::new("Let's Go"),
+                TextFont {
+                    font_size: INSERT_COIN_FONT_SIZE,
+                    ..Default::default()
+                },
+                TextColor(YELLOW.into()),
+                TextLayout::new_with_justify(JustifyText::Center),
+            ));
+        });
+
+    // Show New Wave
+    commands
+        .spawn((Node {
+            position_type: PositionType::Absolute,
+            // justify_content: JustifyContent::Center,
+            align_self: AlignSelf::Center,
+
+            ..default()
+        },))
+        .with_children(|builder| {
+            builder.spawn((
+                Overlay {
+                    game_state: GameState::NewWave,
+                },
+                Text::new("New Wave"),
+                TextFont {
+                    font_size: INSERT_COIN_FONT_SIZE,
+                    ..Default::default()
+                },
+                TextColor(YELLOW.into()),
+                TextLayout::new_with_justify(JustifyText::Center),
+            ));
+        });
+
+    // Show Leader Board
+    commands
+        .spawn((Node {
+            position_type: PositionType::Absolute,
+            // justify_content: JustifyContent::Center,
+            align_self: AlignSelf::Center,
+
+            ..default()
+        },))
+        .with_children(|builder| {
+            builder.spawn((
+                Overlay {
+                    game_state: GameState::LeaderBoard,
+                },
+                Text::new("Leader Board"),
+                TextFont {
+                    font_size: INSERT_COIN_FONT_SIZE,
+                    ..Default::default()
+                },
+                TextColor(DARK_CYAN.into()),
+                TextLayout::new_with_justify(JustifyText::Center),
+            ));
+        });
 }
 
 pub fn text_update_system(
@@ -275,8 +296,8 @@ pub fn state_update_system(
     store: ResMut<Store>,
     game_state_timer: Res<TimerResource>,
 
-    mut show_state_query: Query<&mut Visibility, With<ShowState>>,
-    // mut game_state_query: Query<(&mut Visibility, &mut Text, &Overlay), Without<ShowState>>,
+    show_state_query: Query<&mut Visibility, With<ShowFps>>,
+    game_state_query: Query<(&mut Visibility, &mut TextColor, &Overlay), Without<ShowFps>>,
 ) {
     for mut show_state_visibilty in show_state_query {
         *show_state_visibilty = if store.show_state {
@@ -285,18 +306,17 @@ pub fn state_update_system(
             Visibility::Hidden
         };
     }
-    // // compute alpha from sinus of ratio between elapse time and timer duration
+    // compute alpha from sinus of ratio between elapse time and timer duration
+    let ratio =
+        game_state_timer.elapsed().as_secs_f32() / game_state_timer.duration().as_secs_f32();
+    let alpha = (PI * ratio).sin();
+    for (mut visibility, mut text, overlay) in game_state_query {
+        text.set_alpha(alpha);
 
-    // let ratio =
-    //     game_state_timer.elapsed().as_secs_f32() / game_state_timer.duration().as_secs_f32();
-    // let alpha = (PI * ratio).sin();
-    // for (mut visibility, mut text, overlay) in &mut game_state_query {
-    //     // text.sections[0].style.color.set_alpha(alpha);
-
-    //     if overlay.game_state == store.game_state {
-    //         *visibility = Visibility::Visible;
-    //     } else {
-    //         *visibility = Visibility::Hidden;
-    //     }
-    // }
+        if overlay.game_state == store.game_state {
+            *visibility = Visibility::Visible;
+        } else {
+            *visibility = Visibility::Hidden;
+        }
+    }
 }

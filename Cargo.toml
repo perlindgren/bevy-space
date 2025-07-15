@@ -4,7 +4,6 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-# bevy = { version = "0.15.3", features = ["dynamic_linking"] }
 bevy = { version = "0.16.1", features = ["dynamic_linking"] }
 log = { version = "*", features = [
     "max_level_debug",

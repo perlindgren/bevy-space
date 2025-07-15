@@ -22,7 +22,6 @@ fn setup(mut commands: Commands) {
 }
 
 fn main() {
-    info!("app started");
     App::new()
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
