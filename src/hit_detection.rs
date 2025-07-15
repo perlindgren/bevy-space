@@ -1,7 +1,7 @@
 use crate::{
     alien::*,
-    audio::*,
-    bunker::*,
+    //audio::*,
+    // bunker::*,
     common::*,
     // game_state::{GameState, StateTransitionTimer, Store},
     game_state::{GameState, GameStateEvent, Store},
@@ -17,11 +17,10 @@ pub fn update_system(
     mut store: ResMut<Store>,
     image: Res<CrossImage>,
     mut game_state_ew: EventWriter<GameStateEvent>,
-    mut play_sound_ew: EventWriter<PlaySoundEvent>,
-
+    // mut play_sound_ew: EventWriter<PlaySoundEvent>,
     alien_query: Query<(Entity, &Transform), With<Alien>>,
     mut lazer_query: Query<(&mut Lazer, &Transform)>,
-    mut bunker_query: Query<(&mut TextureAtlas, Entity, &Transform), With<Bunker>>,
+    mut bunker_query: Query<(&mut Sprite, Entity, &Transform), With<Bunker>>,
     alien_bullet_query: Query<(Entity, &Transform), With<AlienBullet>>,
     mut player_query: Query<&Transform, With<Player>>,
 ) {

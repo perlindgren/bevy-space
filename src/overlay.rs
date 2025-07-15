@@ -274,6 +274,7 @@ pub fn text_update_system(
 pub fn score_update_system(
     store: Res<Store>,
 
+    //#[allow(clippy::type_complexity)]
     mut state: ParamSet<(
         Query<&mut TextSpan, With<LivesText>>,
         Query<&mut TextSpan, With<WaveText>>,

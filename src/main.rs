@@ -9,10 +9,11 @@ use bevy::{diagnostic::FrameTimeDiagnosticsPlugin, prelude::*, window::WindowRes
 
 use bevy_space::{
     alien,
+    bunker,
     common::*,
     game_state,
     keyboard_input,
-    lazer, // audio, bunker,  gamepad, hit_detection, keyboard_input, lazer,
+    lazer, // audio,  gamepad, hit_detection, keyboard_input, lazer,
     overlay,
     particle,
     player,
@@ -50,7 +51,7 @@ fn main() {
                 player::setup,
                 lazer::setup,
                 alien::setup,
-                // bunker::setup,
+                bunker::setup,
                 overlay::setup,
                 particle::setup,
                 // audio::setup,

@@ -38,20 +38,19 @@ pub fn setup_borrowed(
                 if *data < 5 {
                     bunker.push((
                         Bunker,
-                        SpriteBundle {
-                            transform: Transform::from_xyz(
-                                (c as f32 - (row.len() as f32 - 1.0) / 2.0) * 16.0
-                                    + (2.0 * b as f32 - (BUNKERS as f32 - 1.0)) * BUNKER_SPACE,
-                                BUNKERS_Y - SCENE_HEIGHT - (r as f32) * 16.0,
-                                0.0,
-                            ),
-                            texture: texture.clone(),
-                            ..default()
-                        },
-                        TextureAtlas {
-                            layout: texture_atlas_layout.clone(),
-                            index: *data,
-                        },
+                        Sprite::from_atlas_image(
+                            texture.clone(),
+                            TextureAtlas {
+                                layout: texture_atlas_layout.clone(),
+                                index: *data,
+                            },
+                        ),
+                        Transform::from_xyz(
+                            (c as f32 - (row.len() as f32 - 1.0) / 2.0) * 16.0
+                                + (2.0 * b as f32 - (BUNKERS as f32 - 1.0)) * BUNKER_SPACE,
+                            BUNKERS_Y - SCENE_HEIGHT - (r as f32) * 16.0,
+                            0.0,
+                        ),
                     ));
                 }
             }
