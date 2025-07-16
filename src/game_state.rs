@@ -1,6 +1,6 @@
 use crate::{
     alien,
-    // audio::PlayMusicEvent,
+    audio::PlayMusicEvent,
     bunker::{self, Bunker},
     common::*,
 };
@@ -94,7 +94,7 @@ pub enum GameStateEvent {
 
 pub fn game_state_event_system(
     mut game_state_er: EventReader<GameStateEvent>,
-    // mut play_music_event_writer: EventWriter<PlayMusicEvent>,
+    mut play_music_event_writer: EventWriter<PlayMusicEvent>,
     mut store: ResMut<Store>,
     mut timer: ResMut<TimerResource>,
 ) {
@@ -103,7 +103,7 @@ pub fn game_state_event_system(
         match event {
             GameStateEvent::PressPlay => {
                 debug!("press play received");
-                // play_music_event_writer.send(PlayMusicEvent(false));
+                play_music_event_writer.write(PlayMusicEvent(false));
                 store.reset();
                 store.lives = NR_LIVES;
                 store.game_state = GameState::Start;
