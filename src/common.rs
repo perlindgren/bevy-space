@@ -16,6 +16,7 @@ pub const PLAYER_SPAWN_DURATION: f32 = 0.1;
 
 pub const LAZER_SPEED: f32 = 1250.0;
 pub const LAZER_PARTICLE_INTERVAL: f32 = 0.02; // Duration in seconds between particles
+pub const LAZER_FIRING_INTERVAL: f32 = 0.5; // Cooldown for lazers
 
 pub const SCENE_WIDTH: f32 = RES_X / 2.0 - 100.0;
 pub const SCENE_HEIGHT: f32 = RES_Y / 2.0 - 50.0;

@@ -1,4 +1,4 @@
-use crate::{common::*, particle::*, player::Player};
+use crate::{common::*, particle::*, player::Player, game_state::Store};
 use bevy::prelude::*;
 use rand::random;
 use std::time::Duration;
@@ -10,89 +10,94 @@ pub enum Lazer {
     Idle,
 }
 
+pub struct LazerData {
+    pub lazer: Lazer,
+    pub transform: Transform
+}
+
 #[derive(Event)]
 pub struct FireLazerEvent;
 
 pub fn fire_lazer_system(
     mut fire_lazer_event: EventReader<FireLazerEvent>,
-    mut lazer_query: Query<&mut Lazer>,
+    time: Res<Time>,
+    mut store: ResMut<Store>,
+    player_query: Query<&Transform, With<Player>>,
 ) {
     if !fire_lazer_event.is_empty() {
         debug!("-- fire lazer event received --");
         fire_lazer_event.clear();
-        let mut lazer = lazer_query.single_mut();
-        if *lazer == Lazer::Idle {
-            *lazer = Lazer::Fire
+        if store.lazer_interval <= 0.0 {
+            if let Ok(player_transform) = player_query.get_single() {
+                store.lazers.push(LazerData {
+                    lazer: Lazer::Fire,
+                    transform: Transform::from_translation(player_transform.translation + Vec3::new(0.0, PLAYER_HEIGHT, 0.0)),
+                });
+
+                store.lazer_interval = LAZER_FIRING_INTERVAL;
+            }
         }
     }
+
+    store.lazer_interval -= time.delta_seconds();
 }
+
 
 /// lazer movement
 pub fn update_system(
     mut commands: Commands,
     time: Res<Time>,
     image: Res<CrossImage>,
-    mut player_query: Query<&mut Transform, With<Player>>,
-    mut lazer_position: Query<(&mut Lazer, &mut Visibility, &mut Transform), Without<Player>>,
+    player_query: Query<&Transform, With<Player>>,
+    mut store: ResMut<Store>,
 ) {
-    let player_transform = player_query.single_mut();
-    let (mut lazer, mut visibility, mut transform) = lazer_position.single_mut();
+    let player_transform = player_query.single();
 
-    match &mut *lazer {
-        Lazer::Fire => {
-            transform.translation =
-                player_transform.translation + Vec3::new(0.0, PLAYER_HEIGHT, 0.0);
-            *lazer = Lazer::Fired(Timer::new(
-                Duration::from_secs_f32(LAZER_PARTICLE_INTERVAL),
-                TimerMode::Repeating,
-            ));
-            *visibility = Visibility::Visible;
-            spawn_explosion(
-                &mut commands,
-                &image,
-                50,
-                (
-                    player_transform.translation.x,
-                    player_transform.translation.y,
-                )
-                    .into(),
-                100.0,
-                0.0,
-                (10.0, 10.0).into(),
-            );
-        }
-        Lazer::Fired(timer) => {
-            timer.tick(time.delta());
-            if timer.just_finished() {
-                spawn_particle(
-                    commands,
-                    image,
-                    (transform.translation.x, transform.translation.y).into(),
-                    (30.0 * (random::<f32>() - 0.5), -LAZER_SPEED * 0.1).into(),
-                    (0.0, 0.0).into(),
+    store.lazers.retain_mut(|lazer_data| {
+        match &mut lazer_data.lazer {
+            Lazer::Fire => {
+                lazer_data.lazer = Lazer::Fired(Timer::new(
+                    Duration::from_secs_f32(LAZER_PARTICLE_INTERVAL),
+                    TimerMode::Repeating,
+                ));
+                lazer_data.transform.translation = player_transform.translation + Vec3::new(0.0, PLAYER_HEIGHT, 0.0);
+
+                spawn_explosion(
+                    &mut commands,
+                    &image,
+                    50,
+                    lazer_data.transform.translation.truncate(),
+                    100.0,
+                    0.0,
+                    (10.0, 10.0).into(),
                 );
             }
+            Lazer::Fired(timer) => {
+                timer.tick(time.delta());
+                if timer.just_finished() {
+                    spawn_particle(
+                        &mut commands,
+                        &image,
+                        lazer_data.transform.translation.truncate(),
+                        (30.0 * (random::<f32>() - 0.5), -LAZER_SPEED * 0.1).into(),
+                        (0.0, 0.0).into(),
+                    );
+                }
 
-            if transform.translation.y > SCENE_HEIGHT {
-                *lazer = Lazer::Idle;
-            } else {
-                transform.translation.y += LAZER_SPEED * time.delta_seconds()
+                lazer_data.transform.translation.y += LAZER_SPEED * time.delta_seconds();
+
+                if lazer_data.transform.translation.y > SCENE_HEIGHT {
+                    return false;
+                }
+            }
+            Lazer::Idle => {
+                return false;
             }
         }
-        _ => {
-            *visibility = Visibility::Hidden;
-        }
-    }
+        true
+    });
 }
 
 pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
-    commands.spawn((
-        Lazer::Idle,
-        SpriteBundle {
-            texture: asset_server.load("sprites/lazer.png"),
-            transform: Transform::from_xyz(0., SCENE_HEIGHT, 0.),
-            visibility: Visibility::Hidden,
-            ..default()
-        },
-    ));
+ // Nothing to do here
 }

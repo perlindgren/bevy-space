@@ -34,9 +34,10 @@ pub fn update_system(
     }
 }
 
+
 pub fn spawn_particle(
-    mut commands: Commands,
-    image: Res<CrossImage>,
+    commands: &mut Commands,
+    image: &Res<CrossImage>,
     pos: Vec2,
     delta: Vec2,
     delta_random: Vec2,

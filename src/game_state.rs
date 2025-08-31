@@ -3,6 +3,7 @@ use crate::{
     audio::PlayMusicEvent,
     bunker::{self, Bunker},
     common::*,
+    lazer::{LazerData}
 };
 use bevy::prelude::*;
 use std::{default::Default, time::Duration};
@@ -29,6 +30,8 @@ pub struct Store {
     pub lives: u8,
     pub player_count_down: f32,
     pub game_state: GameState,
+    pub lazers: Vec<LazerData>,
+    pub lazer_interval: f32,
     pub show_state: bool,
 }
 
@@ -44,6 +47,8 @@ impl Default for Store {
             lives: 0,
             player_count_down: 3.0,
             game_state: GameState::InsertCoin,
+            lazers: vec![],
+            lazer_interval: 0.0,
             show_state: false,
         }
     }
@@ -112,7 +117,7 @@ pub fn game_state_event_system(
             GameStateEvent::LooseLife => {
                 if store.game_state == GameState::Play {
                     store.lives -= 1;
-                    if store.lives == 0 {
+                    if store.lives <= 0 {
                         store.game_state = GameState::GameOver;
                         timer.set(STATE_TRANSITION_MENU);
                     } else {
@@ -153,7 +158,9 @@ pub fn update_system(
     timer.tick(time.delta());
 
     // extra life(s)
-    if store.score >= store.score_new_life {
+    // I think this is what was causing your race condition. But honestly this could be a cool mechanic
+    // Like a final shot to revive mechanic
+    if store.score >= store.score_new_life && store.lives >= 1 {
         store.lives += 1;
         store.score_new_life += (store.score_new_life as f32 * SCORE_SCALE) as u32;
     }
