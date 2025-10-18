@@ -157,7 +157,7 @@ pub fn setup(mut commands: Commands) {
                     ..Default::default()
                 },
                 TextColor(RED.into()),
-                TextLayout::new_with_justify(JustifyText::Center),
+                TextLayout::new_with_justify(Justify::Center),
             ));
         });
 
@@ -181,7 +181,7 @@ pub fn setup(mut commands: Commands) {
                     ..Default::default()
                 },
                 TextColor(MAGENTA.into()),
-                TextLayout::new_with_justify(JustifyText::Center),
+                TextLayout::new_with_justify(Justify::Center),
             ));
         });
 
@@ -205,7 +205,7 @@ pub fn setup(mut commands: Commands) {
                     ..Default::default()
                 },
                 TextColor(YELLOW.into()),
-                TextLayout::new_with_justify(JustifyText::Center),
+                TextLayout::new_with_justify(Justify::Center),
             ));
         });
 
@@ -229,7 +229,7 @@ pub fn setup(mut commands: Commands) {
                     ..Default::default()
                 },
                 TextColor(YELLOW.into()),
-                TextLayout::new_with_justify(JustifyText::Center),
+                TextLayout::new_with_justify(Justify::Center),
             ));
         });
 
@@ -253,7 +253,7 @@ pub fn setup(mut commands: Commands) {
                     ..Default::default()
                 },
                 TextColor(DARK_CYAN.into()),
-                TextLayout::new_with_justify(JustifyText::Center),
+                TextLayout::new_with_justify(Justify::Center),
             ));
         });
 }

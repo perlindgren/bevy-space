@@ -66,43 +66,43 @@ Hysteresis set at 0.01 to avoid drift, see `common.rs` for tuning.
 
 ## Design Documentation
 
-The game uses the Bevy ECS to partition state and functionality. The initial design used `Resources` shared among the `Components` to determine the game logic. While adding more `Components` (and functionality) the number of dependencies between the `systems` grew. This is not necessarily a problem, however the amount of code duplication was increasing (and it started to become messy to accomplish desired behavior). This is not a unique problem the this particular game, instead an expected effect of shared state. The problem can be addressed in various ways, e.g., by implementing methods on the state holding `Resources` and/or by using `Events`. I opted to migrate towards `Events` primarily.
+The game uses the Bevy ECS to partition state and functionality. The initial design used `Resources` shared among the `Components` to determine the game logic. While adding more `Components` (and functionality) the number of dependencies between the `systems` grew. This is not necessarily a problem, however the amount of code duplication was increasing (and it started to become messy to accomplish desired behavior). This is not a unique problem the this particular game, instead an expected effect of shared state. The problem can be addressed in various ways, e.g., by implementing methods on the state holding `Resources` and/or by using `Messages`. I opted to migrate towards `Messages` primarily.
 
-### Events
+### Messages
 
 Technically, events (if used correctly) increase available parallelism among systems (as under the Bevy hood, the need for "locking" of shared resources are reduced). For this particular application, this is not any major concern but in a realistic game parallel execution is in general desirable.
 
-Events are currently declared along with their main `Resource`, so e.g., the `game_state` module defines the `GameStateEvent`. (Alternatively, all `Event` could be declared or re-exported by a separate module for convenience.)
+Messages are currently declared along with their main `Resource`, so e.g., the `game_state` module defines the `GameStateMessage`. (Alternatively, all `Message` could be declared or re-exported by a separate module for convenience.)
 
 The events declared are summarized as follows:
 
-- `PlaySoundEvent`, play a one shot sample
-- `PlayMusicEvent`, control background music
-- `GameStateEvent`, request change of game state
+- `PlaySoundMessage`, play a one shot sample
+- `PlayMusicMessage`, control background music
+- `GameStateMessage`, request change of game state
 
-The `Events` are listed by `Component` below.
+The `Messages` are listed by `Component` below.
 
 | Module           | Declared         | Reader | Writer           |
 | ---------------- | ---------------- | ------ | ---------------- |
 | `alien`          | -                | -      | -                |
-| `audio`          | `PlaySoundEvent` | X      | -                |
-|                  | `PlayMusicEvent` | X      | -                |
+| `audio`          | `PlaySoundMessage` | X      | -                |
+|                  | `PlayMusicMessage` | X      | -                |
 | `bunker`         | -                | -      | -                |
 | `common`         | -                | -      | -                |
-| `game_state`     | `GameStateEvent` | X      | `PlayMusicEvent` |
-| `hit_detection`  | -                | -      | `PlaySoundEvent` |
-|                  | -                | -      | `GameStateEvent` |
-| `keyboard_input` | -                | -      | `FireLazerEvent` |
-|                  | -                | -      | `PlayerEvent`    |
-|                  | -                | -      | `GameStateEvent` |
-| `gamepad`        | -                | -      | `FireLazerEvent` |
-|                  | -                | -      | `PlayerEvent`    |
-|                  | -                | -      | `GameStateEvent` |
-| `lazer`          | `FireLazerEvent` | X      | -                |
+| `game_state`     | `GameStateMessage` | X      | `PlayMusicMessage` |
+| `hit_detection`  | -                | -      | `PlaySoundMessage` |
+|                  | -                | -      | `GameStateMessage` |
+| `keyboard_input` | -                | -      | `FireLazerMessage` |
+|                  | -                | -      | `PlayerMessage`    |
+|                  | -                | -      | `GameStateMessage` |
+| `gamepad`        | -                | -      | `FireLazerMessage` |
+|                  | -                | -      | `PlayerMessage`    |
+|                  | -                | -      | `GameStateMessage` |
+| `lazer`          | `FireLazerMessage` | X      | -                |
 | `lib`            | -                | -      | -                |
 | `main`           | -                | -      | -                |
 | `overlay`        | -                | -      | -                |
-| `player`         | `PlayerEvent`    | X      | -                |
+| `player`         | `PlayerMessage`    | X      | -                |
 
 |
 

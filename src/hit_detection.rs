@@ -3,8 +3,7 @@ use crate::{
     audio::*,
     bunker::*,
     common::*,
-    // game_state::{GameState, StateTransitionTimer, Store},
-    game_state::{GameState, GameStateEvent, Store},
+    game_state::{GameState, GameStateMessage, Store},
     lazer::Lazer,
     particle::*,
     player::Player,
@@ -16,8 +15,8 @@ pub fn update_system(
     mut commands: Commands,
     mut store: ResMut<Store>,
     image: Res<CrossImage>,
-    mut game_state_ew: EventWriter<GameStateEvent>,
-    mut play_sound_ew: EventWriter<PlaySoundEvent>,
+    mut game_state_ew: MessageWriter<GameStateMessage>,
+    mut play_sound_ew: MessageWriter<PlaySoundMessage>,
     alien_query: Query<(Entity, &Transform), With<Alien>>,
     mut lazer_query: Query<(&mut Lazer, &Transform)>,
     mut bunker_query: Query<(&mut Sprite, Entity, &Transform), With<Bunker>>,
@@ -62,7 +61,7 @@ pub fn update_system(
             // hit player
             if in_rect(bullet_transform, player_transform, PLAYER_SIZE) {
                 commands.entity(bullet_entity).despawn();
-                game_state_ew.write(GameStateEvent::LooseLife);
+                game_state_ew.write(GameStateMessage::LooseLife);
                 // to prevent the rare race-condition when outstanding missile would cause an extra life
 
                 *lazer = Lazer::Idle;
@@ -134,7 +133,7 @@ pub fn update_system(
             for (alien_entity, enemy_transform) in &alien_query {
                 // Collision check
                 if in_rect(lazer_transform, enemy_transform, ALIEN_SIZE) {
-                    play_sound_ew.write(PlaySoundEvent::AlienHit);
+                    play_sound_ew.write(PlaySoundMessage::AlienHit);
                     commands.entity(alien_entity).despawn();
                     *lazer = Lazer::Idle;
                     store.aliens_killed += 1;
@@ -153,7 +152,7 @@ pub fn update_system(
 
                     if store.aliens_killed == ALIENS_TOTAL {
                         debug!("-- send new wave --");
-                        game_state_ew.write(GameStateEvent::NewWave);
+                        game_state_ew.write(GameStateMessage::NewWave);
                     }
                 }
             }

@@ -10,11 +10,11 @@ pub enum Lazer {
     Idle,
 }
 
-#[derive(Event)]
-pub struct FireLazerEvent;
+#[derive(Message)]
+pub struct FireLazerMessage;
 
 pub fn fire_lazer_system(
-    mut fire_lazer_event: EventReader<FireLazerEvent>,
+    mut fire_lazer_event: MessageReader<FireLazerMessage>,
     mut lazer_query: Query<&mut Lazer>,
 ) {
     if !fire_lazer_event.is_empty() {

@@ -1,8 +1,8 @@
 use crate::{common::*, game_state::*};
 use bevy::prelude::*;
 
-#[derive(Event)]
-pub struct PlayerEvent(pub f32);
+#[derive(Message)]
+pub struct PlayerMessage(pub f32);
 
 #[derive(Component)]
 pub struct Player;
@@ -10,7 +10,7 @@ pub struct Player;
 /// player movement
 pub fn update_system(
     time: Res<Time>,
-    mut player_er: EventReader<PlayerEvent>,
+    mut player_er: MessageReader<PlayerMessage>,
     mut player_query: Query<&mut Transform, With<Player>>,
 ) {
     if let Ok(mut transform) = player_query.single_mut() {

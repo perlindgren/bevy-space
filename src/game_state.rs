@@ -1,6 +1,6 @@
 use crate::{
     alien,
-    audio::PlayMusicEvent,
+    audio::PlayMusicMessage,
     bunker::{self, Bunker},
     common::*,
 };
@@ -84,8 +84,8 @@ impl TimerResource {
     }
 }
 
-#[derive(Event, Debug)]
-pub enum GameStateEvent {
+#[derive(Message, Debug)]
+pub enum GameStateMessage {
     PressPlay,
     LooseLife,
     NewWave,
@@ -93,23 +93,23 @@ pub enum GameStateEvent {
 }
 
 pub fn game_state_event_system(
-    mut game_state_er: EventReader<GameStateEvent>,
-    mut play_music_event_writer: EventWriter<PlayMusicEvent>,
+    mut game_state_er: MessageReader<GameStateMessage>,
+    mut play_music_event_writer: MessageWriter<PlayMusicMessage>,
     mut store: ResMut<Store>,
     mut timer: ResMut<TimerResource>,
 ) {
     for event in game_state_er.read() {
         debug!("game state event received : {:?}", event);
         match event {
-            GameStateEvent::PressPlay => {
+            GameStateMessage::PressPlay => {
                 debug!("press play received");
-                play_music_event_writer.write(PlayMusicEvent(false));
+                play_music_event_writer.write(PlayMusicMessage(false));
                 store.reset();
                 store.lives = NR_LIVES;
                 store.game_state = GameState::Start;
                 timer.set(STATE_TRANSITION_START);
             }
-            GameStateEvent::LooseLife => {
+            GameStateMessage::LooseLife => {
                 if store.game_state == GameState::Play {
                     store.lives -= 1;
                     if store.lives == 0 {
@@ -121,7 +121,7 @@ pub fn game_state_event_system(
                     }
                 }
             }
-            GameStateEvent::NewWave => {
+            GameStateMessage::NewWave => {
                 store.game_state = GameState::NewWave;
                 store.aliens_killed = 0;
                 store.alien_speed = ALIENS_SPEED_START + store.wave as f32 * ALIENS_SPEED_WAVE;
@@ -129,7 +129,7 @@ pub fn game_state_event_system(
                 store.bullet_interval *= BULLET_INTERVAL_WAVE;
                 timer.set(STATE_TRANSITION_NEW_WAVE);
             }
-            GameStateEvent::Info => {
+            GameStateMessage::Info => {
                 debug!("info received");
                 store.show_state ^= true;
             }

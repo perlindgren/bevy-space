@@ -1,8 +1,8 @@
 use bevy::prelude::*;
 
 // vintage television format
-pub const RES_Y: f32 = 1080.0; // well a bit too modern
-pub const RES_X: f32 = RES_Y * 4.0 / 3.0;
+pub const RES_Y: u32 = 1080; // well a bit too modern
+pub const RES_X: u32 = RES_Y * 4 / 3;
 
 pub const LEFT_STICK_HYSTERESIS: f32 = 0.01; // tune threshold to avoid drift
 
@@ -17,8 +17,8 @@ pub const PLAYER_SPAWN_DURATION: f32 = 0.1;
 pub const LAZER_SPEED: f32 = 1250.0;
 pub const LAZER_PARTICLE_INTERVAL: f32 = 0.02; // Duration in seconds between particles
 
-pub const SCENE_WIDTH: f32 = RES_X / 2.0 - 100.0;
-pub const SCENE_HEIGHT: f32 = RES_Y / 2.0 - 50.0;
+pub const SCENE_WIDTH: f32 = RES_X as f32 / 2.0 - 100.0;
+pub const SCENE_HEIGHT: f32 = RES_Y as f32 / 2.0 - 50.0;
 pub const ALIENS_COL: usize = 11;
 pub const ALIENS_ROW: usize = 5;
 pub const ALIENS_TOTAL: u8 = ALIENS_COL as u8 * ALIENS_ROW as u8;

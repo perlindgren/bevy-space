@@ -3,14 +3,14 @@
 use bevy::{audio::PlaybackMode, prelude::*};
 
 /// Play a one shot sound sample
-#[derive(Event)]
-pub enum PlaySoundEvent {
+#[derive(Message, Debug)]
+pub enum PlaySoundMessage {
     AlienHit,
 }
 
 /// Control continuous playback
-#[derive(Event, Debug)]
-pub struct PlayMusicEvent(pub bool);
+#[derive(Message, Debug)]
+pub struct PlayMusicMessage(pub bool);
 
 #[derive(Resource, Clone)]
 pub struct AudioResource {
@@ -33,12 +33,12 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 
 pub fn audio_hit_system(
     mut commands: Commands,
-    mut play_sound_er: EventReader<PlaySoundEvent>,
+    mut play_sound_er: MessageReader<PlaySoundMessage>,
     sound: Res<AudioResource>,
 ) {
     for event in play_sound_er.read() {
         let sample = match event {
-            PlaySoundEvent::AlienHit => &sound.hit_sample,
+            PlaySoundMessage::AlienHit => &sound.hit_sample,
         };
         commands.spawn((
             AudioPlayer::new(sample.clone()), // this is ugly, why owned?
@@ -51,7 +51,7 @@ pub fn audio_hit_system(
 }
 
 pub fn play_music_system(
-    mut play_music_events: EventReader<PlayMusicEvent>,
+    mut play_music_events: MessageReader<PlayMusicMessage>,
     mut music_controller_query: Query<&mut AudioSink, With<Music>>,
 ) {
     for event in play_music_events.read() {
